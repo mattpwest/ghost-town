@@ -1,44 +1,57 @@
 import tcod as libtcod
-from input_handlers import handle_keys
+from input_handlers import handle_input
+from entity import Entity
+from render import clear_all, render_all
+from game_map import GameMap
 
 
 def main():
+    renderer = libtcod.RENDERER_SDL2
     screen_width = 80
     screen_height = 50
+    map_width = 80
+    map_height = 45
+    room_max_size = 10
+    room_min_size = 6
+    max_rooms = 30
 
-    player_x = int(screen_width / 2)
-    player_y = int(screen_height / 2)
+    colors = {
+       'dark_wall': libtcod.Color(0, 0, 100),
+       'dark_ground': libtcod.Color(50, 50, 150)
+    }
+
+    player = Entity(int(screen_width / 2), int(screen_height / 2), '@', libtcod.white)
+    npc = Entity(int(screen_width / 2 - 5), int(screen_height / 2 - 5), '@', libtcod.yellow)
+    entities = [player, npc]
 
     libtcod.console_set_custom_font('data/arial10x10.png', libtcod.FONT_TYPE_GRAYSCALE | libtcod.FONT_LAYOUT_TCOD)
-    libtcod.console_init_root(screen_width, screen_height, 'Ghost Town', False)
+    root = libtcod.console_init_root(screen_width, screen_height, 'Ghost Town', False, renderer, vsync=True)
+    con = libtcod.console.Console(screen_width, screen_height)
 
-    con = libtcod.console_new(screen_width, screen_height)
-    key = libtcod.Key()
-    mouse = libtcod.Mouse()
+    game_map = GameMap(map_width, map_height)
+    game_map.make_map(max_rooms, room_min_size, room_max_size, map_width, map_height, player)
 
-    while not libtcod.console_is_window_closed():
-        libtcod.sys_check_for_event(libtcod.EVENT_KEY_PRESS, key, mouse)
-
-        libtcod.console_set_default_foreground(con, libtcod.white)
-        libtcod.console_put_char(con, player_x, player_y, '@', libtcod.BKGND_NONE)
-        libtcod.console_blit(con, 0, 0, screen_width, screen_height, 0, 0, 0)
+    running = True
+    while running:
+        render_all(con, entities, game_map, screen_width, screen_height, colors)
         libtcod.console_flush()
 
-        libtcod.console_put_char(con, player_x, player_y, ' ', libtcod.BKGND_NONE)
+        clear_all(con, entities)
 
-        action = handle_keys(key)
+        action = handle_input()
 
         move = action.get('move')
-        exit = action.get('exit')
+        leave = action.get('exit')
         fullscreen = action.get('fullscreen')
 
         if move:
             dx, dy = move
-            player_x += dx
-            player_y += dy
 
-        if exit:
-            return True
+            if not game_map.is_blocked(player.x + dx, player.y + dy):
+                player.move(dx, dy)
+
+        if leave:
+            running = False
         
         if fullscreen:
             libtcod.console_set_fullscreen(not libtcod.console_is_fullscreen())

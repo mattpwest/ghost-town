@@ -1,24 +1,32 @@
 import tcod as libtcod
+import tcod.event
+import tcod.event_constants as keys
 
 
-def handle_keys(key):
-    # Movement keys
-    if key.vk == libtcod.KEY_UP:
+def handle_input():
+    result = {}
+    
+    for event in tcod.event.wait():
+        if event.type == 'QUIT':
+            result.update({'exit': True})
+        elif event.type == 'KEYDOWN':
+            result.update(handle_keys(event))
+    
+    return result
+
+
+def handle_keys(event):
+    if event.sym == keys.K_UP:
         return {'move': (0, -1)}
-    elif key.vk == libtcod.KEY_DOWN:
+    elif event.sym == keys.K_DOWN:
         return {'move': (0, 1)}
-    elif key.vk == libtcod.KEY_LEFT:
+    elif event.sym == keys.K_LEFT:
         return {'move': (-1, 0)}
-    elif key.vk == libtcod.KEY_RIGHT:
+    elif event.sym == keys.K_RIGHT:
         return {'move': (1, 0)}
-
-    if key.vk == libtcod.KEY_ENTER and key.lalt:
-        # Alt+Enter: toggle full screen
+    elif event.sym == keys.K_RETURN and event.mod & tcod.event.KMOD_ALT:
         return {'fullscreen': True}
-
-    elif key.vk == libtcod.KEY_ESCAPE:
-        # Exit the game
+    elif event.sym == keys.K_ESCAPE:
         return {'exit': True}
 
-    # No key was pressed
     return {}
