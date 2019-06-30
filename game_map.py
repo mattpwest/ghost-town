@@ -15,9 +15,8 @@ class GameMap:
         
     def make_map(self, max_rooms, room_min_size, room_max_size, map_width, map_height, player):
         rooms = []
-        num_rooms = 0
 
-        for roomNo in range(max_rooms):
+        for room_number in range(max_rooms):
             w = randint(room_min_size, room_max_size)
             h = randint(room_min_size, room_max_size)
 
@@ -26,40 +25,34 @@ class GameMap:
 
             new_room = Rect(x, y, w, h)
 
-            for other_room in rooms:
-                if new_room.intersect(other_room):
-                    break
-            else:
-                # this means there are no intersections, so this room is valid
+            if self.intersects_existing_room(new_room, rooms):
+                continue
 
-                self.create_room(new_room)
+            self.create_room(new_room)
 
-                (new_x, new_y) = new_room.center()
+            if len(rooms) != 0:
+                self.connect_rooms(new_room, rooms[len(rooms) - 1])
 
-                if num_rooms == 0:
-                    player.x = new_x
-                    player.y = new_y
-                else:
-                    # all rooms after the first:
-                    # connect it to the previous room with a tunnel
-
-                    # center coordinates of previous room
-                    (prev_x, prev_y) = rooms[num_rooms - 1].center()
-
-                    # flip a coin (random number that is either 0 or 1)
-                    if randint(0, 1) == 1:
-                        # first move horizontally, then vertically
-                        self.create_h_tunnel(prev_x, new_x, prev_y)
-                        self.create_v_tunnel(prev_y, new_y, new_x)
-                    else:
-                        # first move vertically, then horizontally
-                        self.create_v_tunnel(prev_y, new_y, prev_x)
-                        self.create_h_tunnel(prev_x, new_x, new_y)
-
-                # finally, append the new room to the list
-                rooms.append(new_room)
-                num_rooms += 1
+            rooms.append(new_room)
     
+    def intersects_existing_room(self, new_room, rooms):
+        for other_room in rooms:
+            if new_room.intersect(other_room):
+                return True
+        
+        return False
+
+    def connect_rooms(self, room1, room2):
+        center1 = room1.center()
+        center2 = room2.center()
+
+        if randint(0, 1) == 1:
+            self.create_h_tunnel(center2.x, center1.x, center2.y)
+            self.create_v_tunnel(center2.y, center1.y, center1.x)
+        else:
+            self.create_v_tunnel(center2.y, center1.y, center2.x)
+            self.create_h_tunnel(center2.x, center1.x, center1.y)
+
     def create_h_tunnel(self, x1, x2, y):
         for x in range(min(x1, x2), max(x1, x2) + 1):
             self.tiles[x][y].blocked = False
@@ -92,9 +85,14 @@ class Rect:
     def center(self):
         center_x = int((self.x1 + self.x2) / 2)
         center_y = int((self.y1 + self.y2) / 2)
-        return (center_x, center_y)
+        return Point(center_x, center_y)
 
     def intersect(self, other):
         # returns true if this rectangle intersects with another one
         return (self.x1 <= other.x2 and self.x2 >= other.x1 and
                 self.y1 <= other.y2 and self.y2 >= other.y1)
+
+class Point:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
