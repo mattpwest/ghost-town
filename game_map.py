@@ -7,6 +7,7 @@ class GameMap:
         self.width = width
         self.height = height
         self.tiles = self.initialize_tiles()
+        self.rooms = []
 
     def initialize_tiles(self):
         tiles = [[Tile(True) for y in range(self.height)] for x in range(self.width)]
@@ -14,8 +15,6 @@ class GameMap:
         return tiles
         
     def make_map(self, max_rooms, room_min_size, room_max_size, map_width, map_height, player):
-        rooms = []
-
         for room_number in range(max_rooms):
             w = randint(room_min_size, room_max_size)
             h = randint(room_min_size, room_max_size)
@@ -25,15 +24,15 @@ class GameMap:
 
             new_room = Rect(x, y, w, h)
 
-            if self.intersects_existing_room(new_room, rooms):
+            if self.intersects_existing_room(new_room, self.rooms):
                 continue
 
             self.create_room(new_room)
 
-            if len(rooms) != 0:
-                self.connect_rooms(new_room, rooms[len(rooms) - 1])
+            if len(self.rooms) != 0:
+                self.connect_rooms(new_room, self.rooms[len(self.rooms) - 1])
 
-            rooms.append(new_room)
+            self.rooms.append(new_room)
     
     def intersects_existing_room(self, new_room, rooms):
         for other_room in rooms:
