@@ -1,5 +1,7 @@
 from tile import Tile
 from random import randint
+from entity import Entity
+import tcod as libtcod
 
 
 class GameMap:
@@ -14,7 +16,7 @@ class GameMap:
 
         return tiles
         
-    def make_map(self, max_rooms, room_min_size, room_max_size, map_width, map_height, player):
+    def make_map(self, max_rooms, room_min_size, room_max_size, map_width, map_height, player, entities, max_monsters_per_room):
         for room_number in range(max_rooms):
             w = randint(room_min_size, room_max_size)
             h = randint(room_min_size, room_max_size)
@@ -31,6 +33,8 @@ class GameMap:
 
             if len(self.rooms) != 0:
                 self.connect_rooms(new_room, self.rooms[len(self.rooms) - 1])
+
+            self.place_entities(new_room, entities, max_monsters_per_room)
 
             self.rooms.append(new_room)
     
@@ -73,6 +77,21 @@ class GameMap:
             for y in range(room.y1 + 1, room.y2):
                 self.tiles[x][y].blocked = False
                 self.tiles[x][y].block_sight = False
+    
+    def place_entities(self, room, entities, max_monsters_per_room):
+        number_of_monsters = randint(0, max_monsters_per_room)
+
+        for i in range(number_of_monsters):
+            x = randint(room.x1 + 1, room.x2 - 1)
+            y = randint(room.y1 + 1, room.y2 - 1)
+
+            if not any([entity for entity in entities if entity.x == x and entity.y == y]):
+                if randint(0, 100) < 80:
+                    monster = Entity(x, y, 'o', libtcod.desaturated_green, 'Orc', True)
+                else:
+                    monster = Entity(x, y, 'T', libtcod.darker_green, 'Troll', True)
+
+                entities.append(monster)
 
 class Rect:
     def __init__(self, x, y, w, h):
@@ -87,7 +106,6 @@ class Rect:
         return Point(center_x, center_y)
 
     def intersect(self, other):
-        # returns true if this rectangle intersects with another one
         return (self.x1 <= other.x2 and self.x2 >= other.x1 and
                 self.y1 <= other.y2 and self.y2 >= other.y1)
 
