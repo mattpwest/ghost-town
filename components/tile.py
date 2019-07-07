@@ -7,7 +7,7 @@ class Tile:
         self.explored = False
         
         if block_sight is None:
-            block_sight = blocked
-        
-        self.block_sight = block_sight
+            self.block_sight = blocked
+        else:
+            self.block_sight = block_sight
     

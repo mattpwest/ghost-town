@@ -1,22 +1,25 @@
-from tile import Tile
+import logging
 from random import randint
-from entity import Entity
-import tcod as libtcod
 
 
 class GameMap:
-    def __init__(self, width, height):
+    def __init__(self, width, height, world, factory):
         self.width = width
         self.height = height
+        self.world = world
+        self.factory = factory
+
         self.tiles = self.initialize_tiles()
+        self.entities = self.initialize_entities()
         self.rooms = []
 
     def initialize_tiles(self):
-        tiles = [[Tile(True) for y in range(self.height)] for x in range(self.width)]
+        return [[self.factory.wall(x, y) for y in range(self.height)] for x in range(self.width)]
 
-        return tiles
+    def initialize_entities(self):
+        return [[None for y in range(self.height)] for x in range(self.width)]
         
-    def make_map(self, max_rooms, room_min_size, room_max_size, map_width, map_height, player, entities, max_monsters_per_room):
+    def make_map(self, max_rooms, room_min_size, room_max_size, map_width, map_height, max_monsters_per_room):
         for room_number in range(max_rooms):
             w = randint(room_min_size, room_max_size)
             h = randint(room_min_size, room_max_size)
@@ -34,7 +37,7 @@ class GameMap:
             if len(self.rooms) != 0:
                 self.connect_rooms(new_room, self.rooms[len(self.rooms) - 1])
 
-            self.place_entities(new_room, entities, max_monsters_per_room)
+            self.place_entities(new_room, max_monsters_per_room)
 
             self.rooms.append(new_room)
     
@@ -58,13 +61,11 @@ class GameMap:
 
     def create_h_tunnel(self, x1, x2, y):
         for x in range(min(x1, x2), max(x1, x2) + 1):
-            self.tiles[x][y].blocked = False
-            self.tiles[x][y].block_sight = False
+            self.dig(x, y)
 
     def create_v_tunnel(self, y1, y2, x):
         for y in range(min(y1, y2), max(y1, y2) + 1):
-            self.tiles[x][y].blocked = False
-            self.tiles[x][y].block_sight = False
+            self.dig(x, y)
 
     def is_blocked(self, x, y):
         if self.tiles[x][y].blocked:
@@ -75,23 +76,29 @@ class GameMap:
     def create_room(self, room):
         for x in range(room.x1 + 1, room.x2):
             for y in range(room.y1 + 1, room.y2):
-                self.tiles[x][y].blocked = False
-                self.tiles[x][y].block_sight = False
+                self.dig(x, y)
     
-    def place_entities(self, room, entities, max_monsters_per_room):
+    def dig(self, x, y):
+        self.world.delete_entity(self.tiles[x][y])
+        self.tiles[x][y] = self.factory.floor(x, y)
+    
+    def place_entities(self, room, max_monsters_per_room):
+        logging.debug("Placing monsters...")
         number_of_monsters = randint(0, max_monsters_per_room)
 
         for i in range(number_of_monsters):
             x = randint(room.x1 + 1, room.x2 - 1)
             y = randint(room.y1 + 1, room.y2 - 1)
+            logging.debug("Monster " + str(i) + " at (" + str(x) + ", " + str(y) + ")")
 
-            if not any([entity for entity in entities if entity.x == x and entity.y == y]):
+            if self.entities[x][y] is None:
                 if randint(0, 100) < 80:
-                    monster = Entity(x, y, 'o', libtcod.desaturated_green, 'Orc', True)
+                    monster = self.factory.orc(x, y)
                 else:
-                    monster = Entity(x, y, 'T', libtcod.darker_green, 'Troll', True)
+                    monster = self.factory.troll(x, y)
 
-                entities.append(monster)
+                self.entities[x][y] = monster
+
 
 class Rect:
     def __init__(self, x, y, w, h):
