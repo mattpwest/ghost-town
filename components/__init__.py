@@ -5,3 +5,4 @@ from .tangible import *
 from .viewable import *
 from .action import *
 from .actor import *
+from .player import *

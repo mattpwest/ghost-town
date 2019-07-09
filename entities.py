@@ -15,7 +15,8 @@ class EntityFactory:
             components.Render('@', libtcod.turquoise),
             components.Tangible(True),
             components.Viewable(False),
-            components.Actor(InputStrategy())
+            components.Actor(InputStrategy()),
+            components.Player()
         )
 
     def orc(self, x, y):

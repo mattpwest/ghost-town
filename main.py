@@ -24,7 +24,7 @@ def main():
 
     fov_algorithm = 0
     fov_light_walls = True
-    fov_radius = 10
+    fov_radius = 5
 
     max_monsters_per_room = 3
 
@@ -53,6 +53,7 @@ def main():
 
     world.add_processor(systems.MovementSystem(game_map), 10)
     world.add_processor(systems.FreeActionsSystem(game_state), 10)
+    world.add_processor(systems.VisionSystem(screen_width, screen_height, fov_radius))
     world.add_processor(systems.RenderSystem(world, screen_width, screen_height, renderer), 5)
     world.add_processor(systems.ActionSystem(game_state), 1)
 
