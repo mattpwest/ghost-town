@@ -16,7 +16,9 @@ class EntityFactory:
             components.Tangible(True),
             components.Viewable(False),
             components.Actor(InputStrategy()),
-            components.Player()
+            components.Player(),
+            components.Creature(),
+            components.Text('Matt', 'ghost', 'A creepy old ghost...')
         )
 
     def orc(self, x, y):
@@ -26,7 +28,9 @@ class EntityFactory:
             components.Render('o', libtcod.desaturated_green),
             components.Tangible(True),
             components.Viewable(False),
-            components.Actor(AIStrategy())
+            components.Actor(AIStrategy()),
+            components.Creature(),
+            components.Text('orc', description='A massive snarling orc')
         )
 
     def troll(self, x, y):
@@ -36,7 +40,9 @@ class EntityFactory:
             components.Render('T', libtcod.darker_green),
             components.Tangible(True),
             components.Viewable(False),
-            components.Actor(AIStrategy())
+            components.Actor(AIStrategy()),
+            components.Creature(),
+            components.Text('troll', description='A slimy green troll')
         )
 
     def wall(self, x, y):
@@ -44,7 +50,8 @@ class EntityFactory:
             components.Position(x, y),
             components.Render('#', libtcod.dark_gray),
             components.Tangible(True),
-            components.Viewable(True)
+            components.Viewable(True),
+            components.Terrain()
         )
     
     def floor(self, x, y):
@@ -52,5 +59,6 @@ class EntityFactory:
             components.Position(x, y),
             components.Render('.', libtcod.dark_gray),
             components.Tangible(False),
-            components.Viewable(False)
+            components.Viewable(False),
+            components.Terrain()
         )

@@ -1,12 +1,11 @@
 import logging
-import sys
 
 import esper
 
-from components import Tangible
+from components import Tangible, Text
+from components.action import MoveAction
 from components.actor import Actor
 from components.position import Position
-from components.action import MoveAction
 
 
 class MovementSystem(esper.Processor):
@@ -32,7 +31,8 @@ class MovementSystem(esper.Processor):
 
             target = self.map.entities[target_x][target_y]
             if target is not None and self.world.component_for_entity(target, Tangible).blocks_physical:
-                self.log.info("You kick the monster!")
+                text = self.world.component_for_entity(target, Text)
+                self.log.info("You kick the " + text.noun + "!")
             else:
                 position.x = target_x
                 position.y = target_y

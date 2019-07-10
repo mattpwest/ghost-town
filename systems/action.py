@@ -15,7 +15,6 @@ If there are no entities that can act we tick the entities adding energy until s
 
 class ActionSystem(esper.Processor):
     def __init__(self, game_state):
-        # console_handler = logging.StreamHandler(sys.stdout)
         self.log = logging.getLogger("ActionSystem")
         self.log.setLevel(logging.INFO)
         self.log.debug("ActionSystem initialized!")

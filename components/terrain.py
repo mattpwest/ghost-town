@@ -1,8 +1,8 @@
 """
-Marker component for player.
+Marker component for terrain.
 """
 
 
-class Player:
+class Terrain:
     def __init__(self):
         pass
