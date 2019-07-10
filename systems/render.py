@@ -18,7 +18,7 @@ class RenderSystem(esper.Processor):
         for entity, (position, render, viewable) in self.world.get_components(Position, Render, Viewable):
             #print("Drawing entity: " + str(entity) + " (x=" + str(position.x) + ", y=" + str(position.y) + ", char=" + render.char + ", color=" + str(render.color) + ")")
 
-            if viewable.visible:
+            if viewable.lit:
                 self.draw(position, render.char, render.color)
 
                 viewable.explored = True

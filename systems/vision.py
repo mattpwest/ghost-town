@@ -48,4 +48,4 @@ class VisionSystem(esper.Processor):
         libtcod.map_compute_fov(self.fov_map, x, y, radius, light_walls, algorithm)
 
         for entity, (position, viewable) in self.world.get_components(Position, Viewable):
-            viewable.visible = self.fov_map.fov[position.y, position.x]
+            viewable.lit = self.fov_map.fov[position.y, position.x]
