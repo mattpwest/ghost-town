@@ -29,7 +29,8 @@ class ActionSystem(esper.Processor):
 
         for entity, actor in self.world.get_component(Actor):
             if self.can_act(actor):
-                self.world.add_component(entity, actor.strategy.act())
+                action = actor.strategy.act(entity, self.world)
+                self.world.add_component(entity, action)
             else:
                 self.tick(entity, actor)
 

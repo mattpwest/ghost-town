@@ -19,3 +19,8 @@ class FreeActionsSystem(esper.Processor):
             libtcod.console_set_fullscreen(not libtcod.console_is_fullscreen())
 
             self.world.remove_component(entity, FullscreenAction)
+
+        for entity, (actor, action) in self.world.get_components(Actor, NoAction):
+            actor.energy -= action.cost
+
+            self.world.remove_component(entity, NoAction)

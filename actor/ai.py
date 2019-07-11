@@ -1,6 +1,6 @@
 import logging
 
-from components import NoAction
+from components import NoAction, Text, Viewable
 
 
 class AIStrategy:
@@ -8,6 +8,11 @@ class AIStrategy:
         self.log = logging.getLogger("AIStrategy")
         self.log.setLevel(logging.INFO)
 
-    def act(self):
-        self.log.debug("AI is thinking...")
+    def act(self, entity, world):
+        text = world.component_for_entity(entity, Text)
+        viewable = world.component_for_entity(entity, Viewable)
+
+        if viewable.lit:
+            self.log.info("The " + text.noun + " wonders when it will get a turn?!")
+
         return NoAction()

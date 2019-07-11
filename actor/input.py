@@ -7,7 +7,7 @@ class InputStrategy:
     def __init__(self):
         pass
 
-    def act(self):
+    def act(self, entity, world):
         return handle_input()
 
 
