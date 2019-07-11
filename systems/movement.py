@@ -2,7 +2,7 @@ import logging
 
 import esper
 
-from components import Tangible, Text
+from components import Tangible, Fighter, Attack
 from components.action import MoveAction
 from components.actor import Actor
 from components.position import Position
@@ -31,11 +31,14 @@ class MovementSystem(esper.Processor):
 
             target = self.map.entities[target_x][target_y]
             if target is not None and self.world.component_for_entity(target, Tangible).blocks_physical:
-                text = self.world.component_for_entity(target, Text)
-                self.log.info("You kick the " + text.noun + "!")
+                self.generate_attack(entity, target)
             else:
                 position.x = target_x
                 position.y = target_y
 
             actor.energy -= action.cost
             self.world.remove_component(entity, MoveAction)
+
+    def generate_attack(self, from_entity, to_entity):
+        if self.world.has_component(from_entity, Fighter) and self.world.has_component(to_entity, Fighter):
+            self.world.add_component(to_entity, Attack(from_entity))

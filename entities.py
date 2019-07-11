@@ -18,7 +18,9 @@ class EntityFactory:
             components.Actor(InputStrategy()),
             components.Player(),
             components.Creature(),
-            components.Text('Matt', 'ghost', 'A creepy old ghost...')
+            components.Text('Matt', 'ghost', 'A creepy old ghost...'),
+            components.Health(30),
+            components.Fighter(5, 2)
         )
 
     def orc(self, x, y):
@@ -30,7 +32,9 @@ class EntityFactory:
             components.Viewable(False),
             components.Actor(AIStrategy()),
             components.Creature(),
-            components.Text('orc', description='A massive snarling orc')
+            components.Text('orc', description='A massive snarling orc'),
+            components.Health(10),
+            components.Fighter(3, 0)
         )
 
     def troll(self, x, y):
@@ -42,7 +46,9 @@ class EntityFactory:
             components.Viewable(False),
             components.Actor(AIStrategy()),
             components.Creature(),
-            components.Text('troll', description='A slimy green troll')
+            components.Text('troll', description='A slimy green troll'),
+            components.Health(20),
+            components.Fighter(5, 1)
         )
 
     def wall(self, x, y):

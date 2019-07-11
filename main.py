@@ -39,7 +39,9 @@ def main():
 
     world.add_processor(systems.MovementSystem(game_map), 10)
     world.add_processor(systems.FreeActionsSystem(game_state), 10)
-    world.add_processor(systems.VisionSystem(screen_width, screen_height, fov_radius))
+    world.add_processor(systems.CombatSystem(), 9)
+    world.add_processor(systems.DamageSystem(game_map), 8)
+    world.add_processor(systems.VisionSystem(screen_width, screen_height, fov_radius), 6)
     world.add_processor(systems.RenderSystem(world, screen_width, screen_height, renderer), 5)
     world.add_processor(systems.ActionSystem(game_state), 1)
 

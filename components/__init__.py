@@ -6,6 +6,10 @@ from .viewable import *
 from .action import *
 from .actor import *
 from .text import *
+from .attack import *
+from .damage import *
+from .fighter import *
+from .health import *
 
 # Marker components
 from .creature import *
