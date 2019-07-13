@@ -3,7 +3,7 @@ import logging
 import esper
 import tcod as libtcod
 
-from components import Position, Render, Viewable, Terrain, Creature
+from components import Position, Render, Viewable, Terrain, Creature, Player, Text, Health
 
 
 class RenderSystem(esper.Processor):
@@ -21,17 +21,35 @@ class RenderSystem(esper.Processor):
         self.log.debug("RenderSystem initialized!")
 
     def process(self):
-        for entity, (position, render, viewable, terrain) \
-                in self.world.get_components(Position, Render, Viewable, Terrain):
+        self.render_type_to_buffer(Terrain)
+        self.render_type_to_buffer(Creature)
+        self.render_type_to_buffer(Player)
+
+        self.render_ui()
+
+        self.render_buffer_to_screen()
+
+        self.clear_buffer()
+
+    def render_type_to_buffer(self, entity_type):
+        for entity, (position, render, viewable, type) \
+                in self.world.get_components(Position, Render, Viewable, entity_type):
             self.draw_entity(entity, position, render, viewable)
 
-        for entity, (position, render, viewable, creature) \
-                in self.world.get_components(Position, Render, Viewable, Creature):
-            self.draw_entity(entity, position, render, viewable)
+    def render_ui(self):
+        libtcod.console_set_default_foreground(self.con, libtcod.white)
 
-        libtcod.console_blit(self.con, 0, 0, self.screen_width, self.screen_height, 0, 0, 0)
+        x = 1
+        y = self.screen_height - 2
+        align = libtcod.LEFT
+        for entity, (text, health, player) in self.world.get_components(Text, Health, Player):
+            self.draw_text('HP: {0:02}/{1:02}'.format(health.points, health.maximum), x, y, align)
+
+    def render_buffer_to_screen(self):
+        libtcod.console_blit(self.con, 0, 0, self.screen_width, self.screen_height, self.root, 0, 0)
         libtcod.console_flush()
 
+    def clear_buffer(self):
         for entity, (position, render, viewable) in self.world.get_components(Position, Render, Viewable):
             if viewable.visible or viewable.explored:
                 self.clear(position)
@@ -52,3 +70,6 @@ class RenderSystem(esper.Processor):
 
     def clear(self, position):
         libtcod.console_put_char(self.con, position.x, position.y, ' ', libtcod.BKGND_NONE)
+
+    def draw_text(self, text, x, y, align):
+        libtcod.console_print_ex(self.con, x, y, libtcod.BKGND_NONE, align, text)

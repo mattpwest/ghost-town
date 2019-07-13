@@ -17,7 +17,6 @@ class EntityFactory:
             components.Viewable(False),
             components.Actor(InputStrategy()),
             components.Player(),
-            components.Creature(),
             components.Text('Matt', 'ghost', 'A creepy old ghost...'),
             components.Health(30),
             components.Fighter(5, 2)
