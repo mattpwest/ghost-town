@@ -5,10 +5,8 @@ from components import Position, Viewable, Tangible, Player
 
 
 class VisionSystem(esper.Processor):
-    def __init__(self, screen_width, screen_height, view_radius):
-        self.width = screen_width
-        self.height = screen_height
-        self.radius = view_radius
+    def __init__(self, config):
+        self.config = config
 
         self.fov_map = None
         self.x = -1
@@ -26,10 +24,10 @@ class VisionSystem(esper.Processor):
             self.x = player.x
             self.y = player.y
 
-            self.recompute_fov(self.x, self.y, self.radius)
+            self.recompute_fov(self.x, self.y)
 
     def initialize_fov(self):
-        fov_map = libtcod.map_new(self.width, self.height)
+        fov_map = libtcod.map_new(self.config.map.width, self.config.map.height)
 
         for entity, (position, tangible, viewable) in self.world.get_components(Position, Tangible, Viewable):
             transparent = not tangible.blocks_physical
@@ -44,7 +42,11 @@ class VisionSystem(esper.Processor):
 
         return fov_map
 
-    def recompute_fov(self, x, y, radius, light_walls=True, algorithm=0):
+    def recompute_fov(self, x, y):
+        radius = self.config.vision.radius
+        light_walls = self.config.vision.light_walls
+        algorithm = self.config.vision.algorithm
+
         libtcod.map_compute_fov(self.fov_map, x, y, radius, light_walls, algorithm)
 
         for entity, (position, viewable) in self.world.get_components(Position, Viewable):

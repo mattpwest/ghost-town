@@ -5,9 +5,9 @@ from components import Tangible
 
 
 class GameMap:
-    def __init__(self, width, height, world, factory):
-        self.width = width
-        self.height = height
+    def __init__(self, config, world, factory):
+        self.config = config.map
+
         self.world = world
         self.factory = factory
 
@@ -16,18 +16,18 @@ class GameMap:
         self.rooms = []
 
     def initialize_tiles(self):
-        return [[self.factory.wall(x, y) for y in range(self.height)] for x in range(self.width)]
+        return [[self.factory.wall(x, y) for y in range(self.config.height)] for x in range(self.config.width)]
 
     def initialize_entities(self):
-        return [[None for y in range(self.height)] for x in range(self.width)]
+        return [[None for y in range(self.config.height)] for x in range(self.config.width)]
 
-    def make_map(self, max_rooms, room_min_size, room_max_size, map_width, map_height, max_monsters_per_room):
-        for room_number in range(max_rooms):
-            w = randint(room_min_size, room_max_size)
-            h = randint(room_min_size, room_max_size)
+    def generate_map(self):
+        for room_number in range(self.config.max_rooms):
+            w = randint(self.config.room_min_size, self.config.room_max_size)
+            h = randint(self.config.room_min_size, self.config.room_max_size)
 
-            x = randint(0, map_width - w - 1)
-            y = randint(0, map_height - h - 1)
+            x = randint(0, self.config.width - w - 1)
+            y = randint(0, self.config.height - h - 1)
 
             new_room = Rect(x, y, w, h)
 
@@ -39,7 +39,7 @@ class GameMap:
             if len(self.rooms) != 0:
                 self.connect_rooms(new_room, self.rooms[len(self.rooms) - 1])
 
-            self.place_entities(new_room, max_monsters_per_room)
+            self.place_entities(new_room, self.config.room_max_monsters)
 
             self.rooms.append(new_room)
     
