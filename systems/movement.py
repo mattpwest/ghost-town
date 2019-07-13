@@ -33,8 +33,10 @@ class MovementSystem(esper.Processor):
             if target is not None and self.world.component_for_entity(target, Tangible).blocks_physical:
                 self.generate_attack(entity, target)
             else:
+                self.map.entities[position.x][position.y] = None
                 position.x = target_x
                 position.y = target_y
+                self.map.entities[position.x][position.y] = entity
 
             actor.energy -= action.cost
             self.world.remove_component(entity, MoveAction)

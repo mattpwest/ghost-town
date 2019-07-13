@@ -36,6 +36,7 @@ def main():
 
     game_map = GameMap(map_width, map_height, world, factory)
     game_map.make_map(max_rooms, room_min_size, room_max_size, map_width, map_height, max_monsters_per_room)
+    game_state['map'] = game_map
 
     world.add_processor(systems.MovementSystem(game_map), 10)
     world.add_processor(systems.FreeActionsSystem(game_state), 10)
@@ -45,10 +46,17 @@ def main():
     world.add_processor(systems.RenderSystem(world, screen_width, screen_height, renderer), 5)
     world.add_processor(systems.ActionSystem(game_state), 1)
 
-    pentity = factory.player(game_map.rooms[0].center().x, game_map.rooms[0].center().y)
+    add_player(factory, game_map)
 
     while game_state['running']:
         world.process()
+
+
+def add_player(factory, game_map):
+    x = game_map.rooms[0].center().x
+    y = game_map.rooms[0].center().y
+    player_entity = factory.player(x, y)
+    game_map.entities[x][y] = player_entity
 
 
 if __name__ == '__main__':

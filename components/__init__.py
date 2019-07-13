@@ -10,8 +10,4 @@ from .attack import *
 from .damage import *
 from .fighter import *
 from .health import *
-
-# Marker components
-from .creature import *
-from .player import *
-from .terrain import *
+from .markers import *

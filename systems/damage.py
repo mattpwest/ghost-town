@@ -15,7 +15,9 @@ class DamageSystem(esper.Processor):
     def process(self):
         for entity, (health, damage) in self.world.get_components(Health, Damage):
             self.log.debug("Applying " + str(damage.points) + " damage to " + str(entity))
+
             health.points -= damage.points
+            self.world.remove_component(entity, Damage)
 
             if health.points <= 0:
                 self.remove_from_map(entity)

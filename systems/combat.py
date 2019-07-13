@@ -37,7 +37,7 @@ class CombatSystem(esper.Processor):
         else:
             subject = "The " + text_attacker.noun
             verb = "kicks"
-            thing = "the " + defender.noun
+            thing = "the " + text_defender.noun
 
             if self.world.has_component(defender, Player):
                 thing = "you"

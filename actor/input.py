@@ -7,7 +7,7 @@ class InputStrategy:
     def __init__(self):
         pass
 
-    def act(self, entity, world):
+    def act(self, entity, world, map):
         return handle_input()
 
 
@@ -33,6 +33,8 @@ def handle_keys(event):
         return move(-1, 0)
     elif event.sym == keys.K_RIGHT:
         return move(1, 0)
+    elif event.sym == keys.K_DECIMALSEPARATOR:
+        return NoAction()
     elif event.sym == keys.K_RETURN and event.mod & tcod.event.KMOD_ALT:
         return FullscreenAction()
     elif event.sym == keys.K_ESCAPE:

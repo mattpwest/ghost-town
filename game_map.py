@@ -1,6 +1,8 @@
 import logging
 from random import randint
 
+from components import Tangible
+
 
 class GameMap:
     def __init__(self, width, height, world, factory):
@@ -18,7 +20,7 @@ class GameMap:
 
     def initialize_entities(self):
         return [[None for y in range(self.height)] for x in range(self.width)]
-        
+
     def make_map(self, max_rooms, room_min_size, room_max_size, map_width, map_height, max_monsters_per_room):
         for room_number in range(max_rooms):
             w = randint(room_min_size, room_max_size)
@@ -68,11 +70,8 @@ class GameMap:
             self.dig(x, y)
 
     def is_blocked(self, x, y):
-        if self.tiles[x][y].blocked:
-            return True
+        return self.world.component_for_entity(self.tiles[x][y], Tangible).blocks_physical
 
-        return False
-    
     def create_room(self, room):
         for x in range(room.x1 + 1, room.x2):
             for y in range(room.y1 + 1, room.y2):
@@ -115,6 +114,7 @@ class Rect:
     def intersect(self, other):
         return (self.x1 <= other.x2 and self.x2 >= other.x1 and
                 self.y1 <= other.y2 and self.y2 >= other.y1)
+
 
 class Point:
     def __init__(self, x, y):
