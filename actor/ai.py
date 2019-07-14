@@ -29,21 +29,23 @@ class AIStrategy:
 
     def basic_move(self, entity, world, game_map, target):
         position = world.component_for_entity(entity, Position)
-        dx = target.x - position.x
-        dy = target.y - position.y
+        x_distance = target.x - position.x
+        y_distance = target.y - position.y
 
-        distance = math.sqrt(dx ** 2 + dy ** 2)
-        if distance == 1:
-            return MoveAction((dx, dy))
+        manhattan_distance = abs(x_distance) + abs(y_distance)
+        if manhattan_distance == 1:
+            return MoveAction((x_distance, y_distance))
 
-        dx = int(round(dx / distance))
-        dy = 0 if dx > 0 else int(round(dy / distance))
-        if not game_map.is_blocked(position.x + dx, position.y + dy):
-            return MoveAction((dx, dy))
+        if abs(x_distance) > 0:
+            dx = int(round(x_distance / abs(x_distance)))
+            dy = 0
+            if not game_map.is_blocked(position.x + dx, position.y + dy):
+                return MoveAction((dx, dy))
 
-        dx = 0
-        dy = int(round(dy / distance))
-        if not game_map.is_blocked(position.x + dx, position.y + dy):
-            return MoveAction((dx, dy))
+        if abs(y_distance) > 0:
+            dx = 0
+            dy = int(round(y_distance / abs(y_distance)))
+            if not game_map.is_blocked(position.x + dx, position.y + dy):
+                return MoveAction((dx, dy))
 
         return NoAction()
