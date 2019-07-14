@@ -7,13 +7,14 @@ from components import Player, Text, Health
 
 
 class RenderUISystem(esper.Processor):
-    def __init__(self, config, state, world):
+    def __init__(self, config, state, world, messages):
         self.log = logging.getLogger("RenderUISystem")
         self.log.setLevel(logging.INFO)
 
         self.config = config
         self.state = state
         self.world = world
+        self.messages = messages
 
         self.state.consoles.ui = libtcod.console.Console(self.config.ui.width, self.config.ui.height)
         self.log.debug("RenderUISystem initialized!")
@@ -33,6 +34,8 @@ class RenderUISystem(esper.Processor):
         for entity, (text, health, player) in self.world.get_components(Text, Health, Player):
             self.draw_bar(x, y, 'HP', health.points, health.maximum, libtcod.light_red, libtcod.darker_red)
 
+        self.draw_messages(self.config.ui.bar_width + 3)
+
     def clear_buffer(self):
         libtcod.console_set_default_background(self.state.consoles.ui, libtcod.black)
         libtcod.console_clear(self.state.consoles.ui)
@@ -40,9 +43,6 @@ class RenderUISystem(esper.Processor):
     def draw(self, x, y, char, color):
         libtcod.console_set_default_foreground(self.state.consoles.ui, color)
         libtcod.console_put_char(self.state.consoles.ui, x, y, char, libtcod.BKGND_NONE)
-
-    def draw_text(self, text, x, y, align):
-        libtcod.console_print_ex(self.state.consoles.ui, x, y, libtcod.BKGND_NONE, align, text)
 
     def draw_bar(self, x, y, name, value, maximum, bar_color, back_color):
         console = self.state.consoles.ui
@@ -66,3 +66,21 @@ class RenderUISystem(esper.Processor):
         self.draw(self.config.ui.width - 1, 0, 'U', libtcod.red)
         self.draw(0, self.config.ui.height - 1, 'U', libtcod.red)
         self.draw(self.config.ui.width - 1, self.config.ui.height - 1, 'U', libtcod.red)
+
+    def draw_messages(self, x):
+        y = 1
+        size = self.config.ui.height - y
+
+        console = self.state.consoles.ui
+
+        messages = self.messages.log[-size:]
+        color = None
+        for idx in range(0, len(messages)):
+            if color != messages[idx].color:
+                color = messages[idx].color
+                libtcod.console_set_default_foreground(console, color)
+
+            self.draw_text(messages[idx].text, x, y + idx, )
+
+    def draw_text(self, text, x, y, align=libtcod.LEFT):
+        libtcod.console_print_ex(self.state.consoles.ui, x, y, libtcod.BKGND_NONE, align, text)

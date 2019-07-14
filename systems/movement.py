@@ -9,11 +9,12 @@ from components.position import Position
 
 
 class MovementSystem(esper.Processor):
-    def __init__(self, map):
+    def __init__(self, game_map, messages):
         self.log = logging.getLogger("MovementSystem")
-        self.log.setLevel(logging.INFO)
+        self.log.setLevel(logging.WARN)
 
-        self.map = map
+        self.map = game_map
+        self.messages = messages
 
     def process(self):
         for entity, (actor, position, action) in self.world.get_components(Actor, Position, MoveAction):
@@ -26,7 +27,9 @@ class MovementSystem(esper.Processor):
             tile_tangible = self.world.component_for_entity(tile, Tangible)
 
             if tile_tangible.blocks_physical:
-                self.log.info("The rough wall is solid and unyielding.")
+                message = "The rough wall is solid and unyielding."
+                self.log.info(message)
+                self.messages.add(message)
                 return
 
             target = self.map.entities[target_x][target_y]

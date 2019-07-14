@@ -6,6 +6,7 @@ import systems as systems
 from config import Config
 from entities import EntityFactory
 from game_map import GameMap
+from messages import MessageLog
 
 
 def main():
@@ -13,26 +14,24 @@ def main():
     logging.root.setLevel(logging.INFO)
 
     config = Config('data/config.ini')
-
     game_state = {'running': True}
-
     world = esper.World()
-
     factory = EntityFactory(world)
+    messages = MessageLog()
 
     game_map = GameMap(config, world, factory)
     game_map.generate_map()
     game_state['map'] = game_map
 
-    world.add_processor(systems.MovementSystem(game_map), 10)
+    world.add_processor(systems.MovementSystem(game_map, messages), 10)
     world.add_processor(systems.FreeActionsSystem(game_state), 10)
-    world.add_processor(systems.CombatSystem(), 9)
-    world.add_processor(systems.DamageSystem(game_map), 8)
+    world.add_processor(systems.CombatSystem(messages), 9)
+    world.add_processor(systems.DamageSystem(game_map, messages), 8)
     world.add_processor(systems.VisionSystem(config), 6)
 
     render_state = systems.RenderState()
     world.add_processor(systems.RenderMapSystem(config, render_state, world), 5)
-    world.add_processor(systems.RenderUISystem(config, render_state, world), 4)
+    world.add_processor(systems.RenderUISystem(config, render_state, world, messages), 4)
     world.add_processor(systems.RenderBlitSystem(config, render_state), 3)
 
     world.add_processor(systems.ActionSystem(game_state), 1)

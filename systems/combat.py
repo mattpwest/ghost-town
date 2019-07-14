@@ -7,10 +7,11 @@ from components import Attack, Fighter, Damage, Text, Player
 
 
 class CombatSystem(esper.Processor):
-    def __init__(self):
+    def __init__(self, messages):
         self.log = logging.getLogger("CombatSystem")
-        self.log.setLevel(logging.INFO)
+        self.log.setLevel(logging.WARN)
 
+        self.messages = messages
         self.rng = random.Random()
 
     def process(self):
@@ -44,3 +45,4 @@ class CombatSystem(esper.Processor):
 
         message = subject + " " + verb + " " + thing + " for " + str(damage) + " damage!"
         self.log.info(message)
+        self.messages.add(message)
