@@ -3,7 +3,7 @@ import logging
 import esper
 import tcod as libtcod
 
-from components import Position, Render, Viewable, Terrain, Creature, Player, Text, Health
+from components import Position, Render, Optics, Terrain, Creature, Player, Text, Health
 
 
 class RenderMapSystem(esper.Processor):
@@ -33,31 +33,29 @@ class RenderMapSystem(esper.Processor):
             self.render_debug()
 
     def render_type_to_buffer(self, entity_type):
-        for entity, (position, render, viewable, type) \
-                in self.world.get_components(Position, Render, Viewable, entity_type):
-            self.draw_entity(entity, position, render, viewable)
+        for entity, (position, render, optics, type) \
+                in self.world.get_components(Position, Render, Optics, entity_type):
+            self.draw_entity(entity, position, render, optics)
 
     def clear_buffer(self):
-        for entity, (position, render, viewable) in self.world.get_components(Position, Render, Viewable):
-            if viewable.visible or viewable.explored:
-                self.clear(position)
+        for y in range(0, self.state.consoles.map.height):
+            for x in range(0, self.state.consoles.map.width):
+                self.clear(x, y)
 
-    def draw_entity(self, entity, position, render, viewable):
+    def draw_entity(self, entity, position, render, optics):
         self.log.debug("Drawing entity: " + str(entity) + " (x=" + str(position.x) + ", y=" + str(position.y) +
                        ", char=" + render.char + ", color=" + str(render.color) + ")")
-        if viewable.lit:
+        if optics.lit:
             self.draw(position, render.char, render.color)
-
-            viewable.explored = True
-        elif viewable.explored:
+        elif optics.explored:
             self.draw(position, render.char, render.color * libtcod.Color(50, 50, 50))
 
     def draw(self, position, char, color):
         libtcod.console_set_default_foreground(self.state.consoles.map, color)
         libtcod.console_put_char(self.state.consoles.map, position.x, position.y, char, libtcod.BKGND_NONE)
 
-    def clear(self, position):
-        libtcod.console_put_char(self.state.consoles.map, position.x, position.y, ' ', libtcod.BKGND_NONE)
+    def clear(self, x, y):
+        libtcod.console_put_char(self.state.consoles.map, x, y, ' ', libtcod.BKGND_NONE)
 
     def render_debug(self):
         top_left = Position(0, 0)

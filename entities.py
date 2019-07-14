@@ -14,7 +14,7 @@ class EntityFactory:
             components.Position(x, y),
             components.Render('@', libtcod.turquoise),
             components.Tangible(True),
-            components.Viewable(False),
+            components.Optics(transparent=True),
             components.Actor(InputStrategy()),
             components.Player(),
             components.Text('Matt', 'ghost', 'A creepy old ghost...'),
@@ -28,7 +28,7 @@ class EntityFactory:
             components.Position(x, y),
             components.Render('o', libtcod.desaturated_green),
             components.Tangible(True),
-            components.Viewable(False),
+            components.Optics(transparent=True),
             components.Actor(AIStrategy()),
             components.Creature(),
             components.Text('orc', description='A massive snarling orc'),
@@ -42,7 +42,7 @@ class EntityFactory:
             components.Position(x, y),
             components.Render('T', libtcod.darker_green),
             components.Tangible(True),
-            components.Viewable(False),
+            components.Optics(transparent=True),
             components.Actor(AIStrategy()),
             components.Creature(),
             components.Text('troll', description='A slimy green troll'),
@@ -55,7 +55,7 @@ class EntityFactory:
             components.Position(x, y),
             components.Render('#', libtcod.dark_gray),
             components.Tangible(True),
-            components.Viewable(True),
+            components.Optics(transparent=False),
             components.Terrain()
         )
     
@@ -64,6 +64,6 @@ class EntityFactory:
             components.Position(x, y),
             components.Render('.', libtcod.dark_gray),
             components.Tangible(False),
-            components.Viewable(False),
+            components.Optics(transparent=True),
             components.Terrain()
         )

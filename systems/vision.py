@@ -1,7 +1,7 @@
 import esper
 import tcod as libtcod
 
-from components import Position, Viewable, Tangible, Player
+from components import Position, Optics, Tangible, Player
 
 
 class VisionSystem(esper.Processor):
@@ -29,16 +29,8 @@ class VisionSystem(esper.Processor):
     def initialize_fov(self):
         fov_map = libtcod.map_new(self.config.map.width, self.config.map.height)
 
-        for entity, (position, tangible, viewable) in self.world.get_components(Position, Tangible, Viewable):
-            transparent = not tangible.blocks_physical
-
-            libtcod.map_set_properties(
-                fov_map,
-                position.x,
-                position.y,
-                transparent,
-                transparent
-            )
+        for entity, (position, optics) in self.world.get_components(Position, Optics):
+            fov_map.transparent[position.y][position.x] = optics.transparent
 
         return fov_map
 
@@ -49,5 +41,8 @@ class VisionSystem(esper.Processor):
 
         libtcod.map_compute_fov(self.fov_map, x, y, radius, light_walls, algorithm)
 
-        for entity, (position, viewable) in self.world.get_components(Position, Viewable):
-            viewable.lit = self.fov_map.fov[position.y, position.x]
+        for entity, (position, optics) in self.world.get_components(Position, Optics):
+            optics.lit = self.fov_map.fov[position.y, position.x]
+
+            if optics.lit:
+                optics.explored = True

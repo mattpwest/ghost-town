@@ -1,7 +1,7 @@
 import logging
 import math
 
-from components import NoAction, Viewable, Position, Player, MoveAction
+from components import NoAction, Optics, Position, Player, MoveAction
 
 
 class AIStrategy:
@@ -10,7 +10,7 @@ class AIStrategy:
         self.log.setLevel(logging.INFO)
 
     def act(self, entity, world, game_map):
-        viewable = world.component_for_entity(entity, Viewable)
+        viewable = world.component_for_entity(entity, Optics)
 
         action = NoAction()
         if not viewable.lit:
