@@ -26,11 +26,15 @@ class DamageSystem(esper.Processor):
 
                 self.describe_death(entity)
 
-                position = self.world.component_for_entity(entity, Position)
-                text = self.world.component_for_entity(entity, Text)
-                self.entity_factory.corpse(position.x, position.y, text.noun)
+                self.spawn_corpse(entity)
 
                 self.world.delete_entity(entity)
+
+    def spawn_corpse(self, entity):
+        position = self.world.component_for_entity(entity, Position)
+        text = self.world.component_for_entity(entity, Text)
+        corpse = self.entity_factory.corpse(position.x, position.y, text.noun)
+        self.map.items[position.x][position.y].append(corpse)
 
     def remove_from_map(self, entity):
         position = self.world.component_for_entity(entity, Position)

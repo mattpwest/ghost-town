@@ -33,6 +33,8 @@ def handle_keys(event):
         return move(-1, 0)
     elif event.sym == keys.K_RIGHT:
         return move(1, 0)
+    elif event.sym == keys.K_COMMA:
+        return PickupAction()
     elif event.sym == keys.K_DECIMALSEPARATOR:
         return NoAction()
     elif event.sym == keys.K_RETURN and event.mod & tcod.event.KMOD_ALT:

@@ -12,11 +12,15 @@ class GameMap:
         self.factory = factory
 
         self.tiles = self.initialize_tiles()
+        self.items = self.initialize_items()
         self.entities = self.initialize_entities()
         self.rooms = []
 
     def initialize_tiles(self):
         return [[self.factory.wall(x, y) for y in range(self.config.height)] for x in range(self.config.width)]
+
+    def initialize_items(self):
+        return [[[] for y in range(self.config.height)] for x in range(self.config.width)]
 
     def initialize_entities(self):
         return [[None for y in range(self.config.height)] for x in range(self.config.width)]

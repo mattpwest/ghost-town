@@ -5,3 +5,4 @@ from .vision import *
 from .combat import *
 from .damage import *
 from .render import *
+from .inventory import *

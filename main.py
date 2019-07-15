@@ -25,6 +25,7 @@ def main():
 
     world.add_processor(systems.MovementSystem(game_map, messages), 10)
     world.add_processor(systems.FreeActionsSystem(game_state), 10)
+    world.add_processor(systems.InventorySystem(game_map, messages), 10)
     world.add_processor(systems.CombatSystem(messages), 9)
     world.add_processor(systems.DamageSystem(game_map, messages, factory), 8)
     world.add_processor(systems.VisionSystem(config), 6)

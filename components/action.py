@@ -10,6 +10,11 @@ class MoveAction(Action):
         self.delta = delta
 
 
+class PickupAction(Action):
+    def __init__(self):
+        Action.__init__(self, 1000)
+
+
 class NoAction(Action):
     def __init__(self):
         Action.__init__(self, 1000)

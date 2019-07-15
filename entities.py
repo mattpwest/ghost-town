@@ -19,7 +19,8 @@ class EntityFactory:
             components.Player(),
             components.Text('Matt', 'ghost', 'A creepy old ghost...'),
             components.Health(30),
-            components.Fighter(5, 2)
+            components.Fighter(5, 2),
+            components.Inventory(5)
         )
 
     def orc(self, x, y):

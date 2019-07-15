@@ -10,3 +10,4 @@ from .damage import *
 from .fighter import *
 from .health import *
 from .markers import *
+from .inventory import *
