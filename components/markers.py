@@ -18,6 +18,11 @@ class Player(Movable):
         Movable.__init__(self)
 
 
+class Item(Movable):
+    def __init__(self):
+        Movable.__init__(self)
+
+
 class Static:
     def __init__(self):
         pass

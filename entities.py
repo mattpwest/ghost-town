@@ -50,6 +50,16 @@ class EntityFactory:
             components.Fighter(5, 1)
         )
 
+    def corpse(self, x, y, creature_type):
+        logging.debug("Adding corpse at (" + str(x) + ", " + str(y) + ")")
+        return self.world.create_entity(
+            components.Position(x, y),
+            components.Render('%', libtcod.darker_red),
+            components.Optics(transparent=True, lit=True),
+            components.Item(),
+            components.Text('corpse', description='A mutilated ' + creature_type + ' corpse.')
+        )
+
     def wall(self, x, y):
         return self.world.create_entity(
             components.Position(x, y),

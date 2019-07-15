@@ -3,7 +3,7 @@ import logging
 import esper
 import tcod as libtcod
 
-from components import Position, Render, Optics, Terrain, Creature, Player, Text, Health
+from components import Position, Render, Optics, Terrain, Creature, Player, Item
 
 
 class RenderMapSystem(esper.Processor):
@@ -26,6 +26,7 @@ class RenderMapSystem(esper.Processor):
         self.clear_buffer()
 
         self.render_type_to_buffer(Terrain)
+        self.render_type_to_buffer(Item)
         self.render_type_to_buffer(Creature)
         self.render_type_to_buffer(Player)
 
@@ -33,14 +34,13 @@ class RenderMapSystem(esper.Processor):
             self.render_debug()
 
     def render_type_to_buffer(self, entity_type):
+        self.log.debug("===== RENDERING " + str(entity_type) + " =====")
         for entity, (position, render, optics, type) \
                 in self.world.get_components(Position, Render, Optics, entity_type):
             self.draw_entity(entity, position, render, optics)
 
     def clear_buffer(self):
-        for y in range(0, self.state.consoles.map.height):
-            for x in range(0, self.state.consoles.map.width):
-                self.clear(x, y)
+        self.state.consoles.map.clear()
 
     def draw_entity(self, entity, position, render, optics):
         self.log.debug("Drawing entity: " + str(entity) + " (x=" + str(position.x) + ", y=" + str(position.y) +
