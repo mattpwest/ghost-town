@@ -9,12 +9,12 @@ from components.position import Position
 
 
 class InventorySystem(esper.Processor):
-    def __init__(self, game_map, messages):
+    def __init__(self, game):
         self.log = logging.getLogger("InventorySystem")
         self.log.setLevel(logging.INFO)
 
-        self.map = game_map
-        self.messages = messages
+        self.map = game.map
+        self.messages = game.messages
 
     def process(self):
         for entity, (actor, position, inventory, action) \

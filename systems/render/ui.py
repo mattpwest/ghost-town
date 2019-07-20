@@ -7,16 +7,15 @@ from components import Player, Text, Health
 
 
 class RenderUISystem(esper.Processor):
-    def __init__(self, config, state, world, messages):
+    def __init__(self, game):
         self.log = logging.getLogger("RenderUISystem")
         self.log.setLevel(logging.INFO)
 
-        self.config = config
-        self.state = state
-        self.world = world
-        self.messages = messages
+        self.config = game.config
+        self.consoles = game.consoles
+        self.messages = game.messages
 
-        self.state.consoles.ui = libtcod.console.Console(self.config.ui.width, self.config.ui.height)
+        self.consoles.ui = libtcod.console.Console(self.config.ui.width, self.config.ui.height)
         self.log.debug("RenderUISystem initialized!")
 
     def process(self):
@@ -27,7 +26,7 @@ class RenderUISystem(esper.Processor):
             self.render_debug()
 
     def render_ui(self):
-        libtcod.console_set_default_foreground(self.state.consoles.ui, libtcod.white)
+        libtcod.console_set_default_foreground(self.consoles.ui, libtcod.white)
 
         x = 1
         y = self.config.ui.height - 2
@@ -37,15 +36,15 @@ class RenderUISystem(esper.Processor):
         self.draw_messages(self.config.ui.bar_width + 3)
 
     def clear_buffer(self):
-        libtcod.console_set_default_background(self.state.consoles.ui, libtcod.black)
-        libtcod.console_clear(self.state.consoles.ui)
+        libtcod.console_set_default_background(self.consoles.ui, libtcod.black)
+        libtcod.console_clear(self.consoles.ui)
 
     def draw(self, x, y, char, color):
-        libtcod.console_set_default_foreground(self.state.consoles.ui, color)
-        libtcod.console_put_char(self.state.consoles.ui, x, y, char, libtcod.BKGND_NONE)
+        libtcod.console_set_default_foreground(self.consoles.ui, color)
+        libtcod.console_put_char(self.consoles.ui, x, y, char, libtcod.BKGND_NONE)
 
     def draw_bar(self, x, y, name, value, maximum, bar_color, back_color):
-        console = self.state.consoles.ui
+        console = self.consoles.ui
         total_width = self.config.ui.bar_width
 
         bar_width = int(float(value) / maximum * total_width)
@@ -71,7 +70,7 @@ class RenderUISystem(esper.Processor):
         y = 1
         size = self.config.ui.height - y
 
-        console = self.state.consoles.ui
+        console = self.consoles.ui
 
         messages = self.messages.log[-size:]
         color = None
@@ -83,4 +82,4 @@ class RenderUISystem(esper.Processor):
             self.draw_text(messages[idx].text, x, y + idx, )
 
     def draw_text(self, text, x, y, align=libtcod.LEFT):
-        libtcod.console_print_ex(self.state.consoles.ui, x, y, libtcod.BKGND_NONE, align, text)
+        libtcod.console_print_ex(self.consoles.ui, x, y, libtcod.BKGND_NONE, align, text)

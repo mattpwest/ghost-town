@@ -3,16 +3,18 @@ import logging
 import esper
 
 from components import Damage, Text, Player, Health, Position, Optics
+from states import State
 
 
 class DamageSystem(esper.Processor):
-    def __init__(self, game_map, messages, entity_factory):
+    def __init__(self, game):
         self.log = logging.getLogger("DamageSystem")
         self.log.setLevel(logging.WARN)
 
-        self.map = game_map
-        self.messages = messages
-        self.entity_factory = entity_factory
+        self.game = game
+        self.map = game.map
+        self.messages = game.messages
+        self.entity_factory = game.factory
 
     def process(self):
         for entity, (health, damage) in self.world.get_components(Health, Damage):
@@ -43,6 +45,7 @@ class DamageSystem(esper.Processor):
     def describe_death(self, entity):
         if self.world.has_component(entity, Player):
             message = "You have died!"
+            self.game.new_state = State.DEAD
         else:
             text = self.world.component_for_entity(entity, Text)
             message = "The " + text.noun + " dies!"

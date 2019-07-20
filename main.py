@@ -5,8 +5,11 @@ import esper
 import systems as systems
 from config import Config
 from entities import EntityFactory
+from game import Game
 from game_map import GameMap
 from messages import MessageLog
+from states import MapState
+from states.dead_state import DeadState
 
 
 def main():
@@ -14,32 +17,40 @@ def main():
     logging.root.setLevel(logging.INFO)
 
     config = Config('data/config.ini')
-    game_state = {'running': True}
     world = esper.World()
     factory = EntityFactory(world)
     messages = MessageLog()
-
     game_map = GameMap(config, world, factory)
-    game_map.generate_map()
-    game_state['map'] = game_map
+    consoles = systems.Consoles()
+    game = Game(config, factory, messages, game_map, consoles)
 
-    world.add_processor(systems.MovementSystem(game_map, messages), 10)
-    world.add_processor(systems.FreeActionsSystem(game_state), 10)
-    world.add_processor(systems.InventorySystem(game_map, messages), 10)
-    world.add_processor(systems.CombatSystem(messages), 9)
-    world.add_processor(systems.DamageSystem(game_map, messages, factory), 8)
-    world.add_processor(systems.VisionSystem(config), 6)
+    game.map.generate_map()
+    add_player(game.factory, game.map)
 
-    render_state = systems.RenderState()
-    world.add_processor(systems.RenderMapSystem(config, render_state, world), 5)
-    world.add_processor(systems.RenderUISystem(config, render_state, world, messages), 4)
-    world.add_processor(systems.RenderBlitSystem(config, render_state), 3)
+    # TODO: DI would be better for this
+    render_map_system = systems.RenderMapSystem(game)
+    render_ui_system = systems.RenderUISystem(game)
+    render_blit_system = systems.RenderBlitSystem(game)
+    vision_system = systems.VisionSystem(game)
 
-    world.add_processor(systems.ActionSystem(game_state), 1)
+    map_state = MapState(game, world, render_map_system, render_ui_system, render_blit_system, vision_system)
+    dead_state = DeadState(game, world, render_map_system, render_ui_system, render_blit_system, vision_system)
+    states = {
+        map_state.for_state(): map_state,
+        dead_state.for_state(): dead_state
+    }
 
-    add_player(factory, game_map)
+    while game.running:
+        if game.new_state is not None and game.new_state != game.state:
+            if game.state in states:
+                states[game.state].on_leave()
 
-    while game_state['running']:
+            game.state = game.new_state
+            game.new_state = None
+
+            if game.state in states:
+                states[game.state].on_enter()
+
         world.process()
 
 

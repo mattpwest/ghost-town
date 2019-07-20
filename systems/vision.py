@@ -1,3 +1,5 @@
+import logging
+
 import esper
 import tcod as libtcod
 
@@ -5,8 +7,11 @@ from components import Position, Optics, Tangible, Player
 
 
 class VisionSystem(esper.Processor):
-    def __init__(self, config):
-        self.config = config
+    def __init__(self, game):
+        self.log = logging.getLogger("VisionSystem")
+        self.log.setLevel(logging.DEBUG)
+
+        self.config = game.config
 
         self.fov_map = None
         self.x = -1
@@ -27,6 +32,7 @@ class VisionSystem(esper.Processor):
             self.recompute_fov(self.x, self.y)
 
     def initialize_fov(self):
+        self.log.debug("Initializing FOV map...")
         fov_map = libtcod.map_new(self.config.map.width, self.config.map.height)
 
         for entity, (position, optics) in self.world.get_components(Position, Optics):
@@ -35,6 +41,7 @@ class VisionSystem(esper.Processor):
         return fov_map
 
     def recompute_fov(self, x, y):
+        self.log.debug("Recomputing FOV map...")
         radius = self.config.vision.radius
         light_walls = self.config.vision.light_walls
         algorithm = self.config.vision.algorithm
