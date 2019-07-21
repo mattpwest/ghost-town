@@ -41,7 +41,7 @@ class MainGame:
 
 
 def main():
-    logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s')
+    logging.basicConfig(format='%(asctime)s [ %(name)20s ]\t%(levelname)7s\t%(message)s')
     logging.root.setLevel(logging.INFO)
 
     obj_graph = pinject.new_object_graph(

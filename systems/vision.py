@@ -9,7 +9,7 @@ from components import Position, Optics, Tangible, Player
 class VisionSystem(esper.Processor):
     def __init__(self, config):
         self.log = logging.getLogger(self.__class__.__name__)
-        self.log.setLevel(logging.DEBUG)
+        self.log.setLevel(logging.INFO)
 
         self.config = config
 

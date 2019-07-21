@@ -9,7 +9,7 @@ from components import Position, Render, Optics, Terrain, Creature, Player, Item
 class RenderMapSystem(esper.Processor):
     def __init__(self, config, consoles):
         self.log = logging.getLogger(self.__class__.__name__)
-        self.log.setLevel(logging.DEBUG)
+        self.log.setLevel(logging.INFO)
         self.log_draw = False
 
         self.config = config

@@ -25,16 +25,11 @@ class ActionSystem(esper.Processor):
         self.log.debug("Initialized!")
 
     def process(self):
-        # Short-circuit this system to make quit trigger immediately
-        if not self.game.running:
-            return
-
         for entity, actor in self.world.get_component(Actor):
-            if self.can_act(actor):
-                action = actor.strategy.act(entity, self.world, self.map)
-                self.world.add_component(entity, action)
-            else:
+            if not self.can_act(actor):
                 self.tick(entity, actor)
+            else:
+                self.log.debug(str(entity) + " is ready to act.")
 
     def tick(self, entity, actor):
         actor.energy += actor.gain

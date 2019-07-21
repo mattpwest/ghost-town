@@ -1,14 +1,23 @@
+import logging
+
+import esper
 import tcod.event
 import tcod.event_constants as keys
+
+from components import Player, Actor
 from components.action import *
 
 
-class InputStrategy:
+class MapInputSystem(esper.Processor):
     def __init__(self):
-        pass
+        self.log = logging.getLogger(self.__class__.__name__)
+        self.log.setLevel(logging.INFO)
 
-    def act(self, entity, world, map):
-        return handle_input()
+    def process(self):
+        for entity, (actor, player) in self.world.get_components(Actor, Player):
+            if actor.energy >= actor.cost:
+                action = handle_input()
+                self.world.add_component(entity, action)
 
 
 def handle_input():

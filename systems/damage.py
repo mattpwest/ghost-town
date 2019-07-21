@@ -2,7 +2,7 @@ import logging
 
 import esper
 
-from components import Damage, Text, Player, Health, Position, Optics
+from components import Damage, Text, Player, Health, Position, Tangible, Render
 from states import State
 
 
@@ -30,7 +30,7 @@ class DamageSystem(esper.Processor):
 
                 self.spawn_corpse(entity)
 
-                self.world.delete_entity(entity)
+                self.delete_entity(entity)
 
     def spawn_corpse(self, entity):
         position = self.world.component_for_entity(entity, Position)
@@ -52,3 +52,10 @@ class DamageSystem(esper.Processor):
 
         self.log.info(message)
         self.messages.add(message)
+
+    def delete_entity(self, entity):
+        if self.world.has_component(entity, Player):
+            self.world.remove_component(entity, Tangible)
+            self.world.remove_component(entity, Render)
+        else:
+            self.world.delete_entity(entity)
