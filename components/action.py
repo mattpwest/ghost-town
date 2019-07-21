@@ -28,3 +28,8 @@ class QuitAction(Action):
 class FullscreenAction(Action):
     def __init__(self):
         Action.__init__(self, 0)
+
+
+class LookAction(Action):
+    def __init__(self):
+        Action.__init__(self, 0)

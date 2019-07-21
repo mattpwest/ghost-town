@@ -5,6 +5,7 @@ from enum import Enum, auto
 class State(Enum):
     MAP = auto()
     DEAD = auto()
+    LOOK = auto()
     NONE = auto()
 
 

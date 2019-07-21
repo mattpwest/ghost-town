@@ -29,7 +29,7 @@ class RenderUiSystem(esper.Processor):
         libtcod.console_set_default_foreground(self.consoles.ui, libtcod.white)
 
         x = 1
-        y = self.config.ui.height - 2
+        y = 1
         for entity, (text, health, player) in self.world.get_components(Text, Health, Player):
             self.draw_bar(x, y, 'HP', health.points, health.maximum, libtcod.light_red, libtcod.darker_red)
 

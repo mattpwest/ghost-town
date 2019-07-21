@@ -57,7 +57,7 @@ class EntityFactory:
             components.Render('%', libtcod.darker_red),
             components.Optics(transparent=True, lit=True),
             components.Item(),
-            components.Text('corpse', description='A mutilated ' + creature_type + ' corpse.')
+            components.Text('corpse', 'a', description='A mutilated ' + creature_type + ' corpse.')
         )
 
     def wall(self, x, y):
@@ -66,7 +66,8 @@ class EntityFactory:
             components.Render('#', libtcod.dark_gray),
             components.Tangible(True),
             components.Optics(transparent=False),
-            components.Terrain()
+            components.Terrain(),
+            components.Text("wall", "a", description="A smooth stone wall.")
         )
     
     def floor(self, x, y):
@@ -75,5 +76,13 @@ class EntityFactory:
             components.Render('.', libtcod.dark_gray),
             components.Tangible(False),
             components.Optics(transparent=True),
-            components.Terrain()
+            components.Terrain(),
+            components.Text("floor", "a", description="A smooth stone floor.")
+        )
+
+    def target(self, x, y):
+        return self.world.create_entity(
+            components.Position(x, y),
+            components.Render('', color=libtcod.yellow),
+            components.Target()
         )

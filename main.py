@@ -10,26 +10,28 @@ from binding_specs import RootModuleSpec
 
 
 class MainGame:
-    def __init__(self, game_state, world, game_map, entity_factory, map_state, dead_state):
+    def __init__(self, game_state, world, game_map, entity_factory,
+                 map_state, dead_state, look_state):
         game_map.generate_map()
         self.add_player(entity_factory, game_map)
 
-        states = {
+        game_states = {
+            dead_state.for_state(): dead_state,
+            look_state.for_state(): look_state,
             map_state.for_state(): map_state,
-            dead_state.for_state(): dead_state
         }
 
         game = game_state
         while game.running:
             if game.new_state is not None and game.new_state != game.state:
-                if game.state in states:
-                    states[game.state].on_leave()
+                if game.state in game_states:
+                    game_states[game.state].on_leave()
 
                 game.state = game.new_state
                 game.new_state = None
 
-                if game.state in states:
-                    states[game.state].on_enter()
+                if game.state in game_states:
+                    game_states[game.state].on_enter()
 
             world.process()
 

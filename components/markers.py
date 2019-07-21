@@ -23,6 +23,11 @@ class Item(Movable):
         Movable.__init__(self)
 
 
+class Target(Movable):
+    def __init__(self):
+        Movable.__init__(self)
+
+
 class Static:
     def __init__(self):
         pass
