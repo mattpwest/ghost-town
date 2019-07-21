@@ -6,8 +6,8 @@ from components.action import FullscreenAction, QuitAction, NoAction
 
 
 class FreeActionsSystem(esper.Processor):
-    def __init__(self, game):
-        self.game = game
+    def __init__(self, game_state):
+        self.game = game_state
 
     def process(self):
         for entity, action in self.world.get_component(QuitAction):

@@ -7,20 +7,20 @@ from components import Position, Render, Optics, Terrain, Creature, Player, Item
 
 
 class RenderMapSystem(esper.Processor):
-    def __init__(self, game):
-        self.log = logging.getLogger("RenderMapSystem")
+    def __init__(self, config, consoles):
+        self.log = logging.getLogger(self.__class__.__name__)
         self.log.setLevel(logging.DEBUG)
         self.log_draw = False
 
-        self.config = game.config
-        self.consoles = game.consoles
+        self.config = config
+        self.consoles = consoles
 
         self.consoles.map = libtcod.console.Console(
             self.config.display.width,
             self.config.display.height - self.config.ui.height
         )
 
-        self.log.debug("RenderMapSystem initialized!")
+        self.log.debug("Initialized!")
 
     def process(self):
         self.clear_buffer()

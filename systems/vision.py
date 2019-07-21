@@ -7,11 +7,11 @@ from components import Position, Optics, Tangible, Player
 
 
 class VisionSystem(esper.Processor):
-    def __init__(self, game):
-        self.log = logging.getLogger("VisionSystem")
+    def __init__(self, config):
+        self.log = logging.getLogger(self.__class__.__name__)
         self.log.setLevel(logging.DEBUG)
 
-        self.config = game.config
+        self.config = config
 
         self.fov_map = None
         self.x = -1
@@ -49,7 +49,7 @@ class VisionSystem(esper.Processor):
         libtcod.map_compute_fov(self.fov_map, x, y, radius, light_walls, algorithm)
 
         for entity, (position, optics) in self.world.get_components(Position, Optics):
-            optics.lit = self.fov_map.fov[position.y, position.x]
+            optics.lit = self.fov_map.fov[position.y, position.x] or self.config.vision.debug
 
             if optics.lit:
                 optics.explored = True

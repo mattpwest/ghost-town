@@ -14,13 +14,15 @@ If there are no entities that can act we tick the entities adding energy until s
 
 
 class ActionSystem(esper.Processor):
-    def __init__(self, game):
-        self.log = logging.getLogger("ActionSystem")
+    def __init__(self, game_state, game_map):
+        self.log = logging.getLogger(self.__class__.__name__)
         self.log.setLevel(logging.INFO)
-        self.log.debug("ActionSystem initialized!")
 
-        self.game = game
+        self.game = game_state
+        self.map = game_map
         self.active = None
+
+        self.log.debug("Initialized!")
 
     def process(self):
         # Short-circuit this system to make quit trigger immediately
@@ -29,7 +31,7 @@ class ActionSystem(esper.Processor):
 
         for entity, actor in self.world.get_component(Actor):
             if self.can_act(actor):
-                action = actor.strategy.act(entity, self.world, self.game.map)
+                action = actor.strategy.act(entity, self.world, self.map)
                 self.world.add_component(entity, action)
             else:
                 self.tick(entity, actor)

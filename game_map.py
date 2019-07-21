@@ -5,11 +5,14 @@ from components import Tangible
 
 
 class GameMap:
-    def __init__(self, config, world, factory):
+    def __init__(self, config, world, entity_factory):
+        self.log = logging.getLogger(self.__class__.__name__)
+        self.log.setLevel(logging.INFO)
+
         self.config = config.map
 
         self.world = world
-        self.factory = factory
+        self.factory = entity_factory
 
         self.tiles = self.initialize_tiles()
         self.items = self.initialize_items()
@@ -26,6 +29,14 @@ class GameMap:
         return [[None for y in range(self.config.height)] for x in range(self.config.width)]
 
     def generate_map(self):
+        self.log.debug("Generating map with " +
+                       "{width=" + str(self.config.width) +
+                       "; height=" + str(self.config.height) +
+                       "; max_rooms=" + str(self.config.max_rooms) +
+                       "; room_max_size=" + str(self.config.room_max_size) +
+                       "; room_min_size=" + str(self.config.room_min_size) +
+                       "}"
+                       )
         for room_number in range(self.config.max_rooms):
             w = randint(self.config.room_min_size, self.config.room_max_size)
             h = randint(self.config.room_min_size, self.config.room_max_size)
@@ -46,12 +57,12 @@ class GameMap:
             self.place_entities(new_room, self.config.room_max_monsters)
 
             self.rooms.append(new_room)
-    
+
     def intersects_existing_room(self, new_room, rooms):
         for other_room in rooms:
             if new_room.intersect(other_room):
                 return True
-        
+
         return False
 
     def connect_rooms(self, room1, room2):
@@ -80,11 +91,11 @@ class GameMap:
         for x in range(room.x1 + 1, room.x2):
             for y in range(room.y1 + 1, room.y2):
                 self.dig(x, y)
-    
+
     def dig(self, x, y):
         self.world.delete_entity(self.tiles[x][y])
         self.tiles[x][y] = self.factory.floor(x, y)
-    
+
     def place_entities(self, room, max_monsters_per_room):
         logging.debug("Placing monsters...")
         number_of_monsters = randint(0, max_monsters_per_room)

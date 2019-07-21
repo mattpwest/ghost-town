@@ -9,12 +9,12 @@ from components.position import Position
 
 
 class MovementSystem(esper.Processor):
-    def __init__(self, game):
-        self.log = logging.getLogger("MovementSystem")
+    def __init__(self, game_map, message_log):
+        self.log = logging.getLogger(self.__class__.__name__)
         self.log.setLevel(logging.WARN)
 
-        self.map = game.map
-        self.messages = game.messages
+        self.map = game_map
+        self.messages = message_log
 
     def process(self):
         for entity, (actor, position, action) in self.world.get_components(Actor, Position, MoveAction):

@@ -5,12 +5,12 @@ import tcod as libtcod
 
 
 class RenderBlitSystem(esper.Processor):
-    def __init__(self, game):
-        self.log = logging.getLogger("RenderBlitSystem")
+    def __init__(self, config, consoles):
+        self.log = logging.getLogger(self.__class__.__name__)
         self.log.setLevel(logging.DEBUG)
 
-        self.config = game.config
-        self.consoles = game.consoles
+        self.config = config
+        self.consoles = consoles
 
         font = 'data/' + self.config.display.font
         fullscreen = False

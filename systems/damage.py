@@ -7,14 +7,14 @@ from states import State
 
 
 class DamageSystem(esper.Processor):
-    def __init__(self, game):
-        self.log = logging.getLogger("DamageSystem")
+    def __init__(self, game_state, game_map, message_log, entity_factory):
+        self.log = logging.getLogger(self.__class__.__name__)
         self.log.setLevel(logging.WARN)
 
-        self.game = game
-        self.map = game.map
-        self.messages = game.messages
-        self.entity_factory = game.factory
+        self.game = game_state
+        self.map = game_map
+        self.messages = message_log
+        self.entity_factory = entity_factory
 
     def process(self):
         for entity, (health, damage) in self.world.get_components(Health, Damage):

@@ -6,17 +6,17 @@ import tcod as libtcod
 from components import Player, Text, Health
 
 
-class RenderUISystem(esper.Processor):
-    def __init__(self, game):
-        self.log = logging.getLogger("RenderUISystem")
+class RenderUiSystem(esper.Processor):
+    def __init__(self, config, consoles, message_log):
+        self.log = logging.getLogger(self.__class__.__name__)
         self.log.setLevel(logging.INFO)
 
-        self.config = game.config
-        self.consoles = game.consoles
-        self.messages = game.messages
+        self.config = config
+        self.consoles = consoles
+        self.messages = message_log
 
         self.consoles.ui = libtcod.console.Console(self.config.ui.width, self.config.ui.height)
-        self.log.debug("RenderUISystem initialized!")
+        self.log.debug("Initialized!")
 
     def process(self):
         self.clear_buffer()

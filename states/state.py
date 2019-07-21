@@ -9,17 +9,12 @@ class State(Enum):
 
 
 class BaseState:
-    def __init__(self, game, world):
+    def __init__(self, world, systems):
         self.log = logging.getLogger(self.__class__.__name__)
         self.log.setLevel(logging.DEBUG)
 
-        self.game = game
         self.world = world
-
-        self.systems = self.define_systems()
-
-    def define_systems(self):
-        return []
+        self.systems = systems
 
     @staticmethod
     def for_state():

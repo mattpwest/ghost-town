@@ -62,3 +62,4 @@ class VisionConfig:
         self.radius = config.getint('radius')
         self.light_walls = config.getboolean('light_walls')
         self.algorithm = config.getint('algorithm')
+        self.debug = config.getboolean('debug')
