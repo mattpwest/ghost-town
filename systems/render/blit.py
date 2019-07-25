@@ -15,7 +15,7 @@ class RenderBlitSystem(esper.Processor):
         font = 'data/' + self.config.display.font
         fullscreen = False
 
-        libtcod.console_set_custom_font(font, libtcod.FONT_TYPE_GRAYSCALE | libtcod.FONT_LAYOUT_TCOD)
+        libtcod.console_set_custom_font(font, libtcod.FONT_TYPE_GRAYSCALE | libtcod.FONT_LAYOUT_ASCII_INROW)
         self.consoles.root = libtcod.console_init_root(
             self.config.display.width,
             self.config.display.height,
