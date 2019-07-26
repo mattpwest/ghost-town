@@ -4,15 +4,16 @@ import esper
 import tcod.event
 import tcod.event_constants as keys
 
-from components import Target, Position
+from components import Target, Position, Optics
 from states import State
 
 
 class TargetInputSystem(esper.Processor):
-    def __init__(self, game_state):
+    def __init__(self, game_map, game_state):
         self.log = logging.getLogger(self.__class__.__name__)
         self.log.setLevel(logging.INFO)
 
+        self.map = game_map
         self.game = game_state
 
     def process(self):
@@ -22,9 +23,16 @@ class TargetInputSystem(esper.Processor):
             if action["quit"]:
                 self.game.new_state = State.MAP
                 self.world.delete_entity(entity)
-            else:
-                position.x += action["delta"][0]
-                position.y += action["delta"][1]
+                return
+
+            tx = position.x + action["delta"][0]
+            ty = position.y + action["delta"][1]
+
+            tile = self.map.tiles[tx][ty]
+            optics = self.world.component_for_entity(tile, Optics)
+            if optics and optics.lit:
+                position.x = tx
+                position.y = ty
 
 
 def handle_input():
