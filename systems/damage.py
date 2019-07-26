@@ -9,7 +9,7 @@ from states import State
 class DamageSystem(esper.Processor):
     def __init__(self, game_state, game_map, message_log, entity_factory):
         self.log = logging.getLogger(self.__class__.__name__)
-        self.log.setLevel(logging.WARN)
+        self.log.setLevel(logging.INFO)
 
         self.game = game_state
         self.map = game_map
@@ -21,6 +21,7 @@ class DamageSystem(esper.Processor):
             self.log.debug("Applying " + str(damage.points) + " damage to " + str(entity))
 
             health.points -= damage.points
+            self.log.debug(str(entity) + " has " + str(health.points) + " HP")
             self.world.remove_component(entity, Damage)
 
             if health.points <= 0:

@@ -8,7 +8,7 @@ from components import NoAction, Optics, Position, Player, MoveAction, Creature,
 class BasicAiSystem(esper.Processor):
     def __init__(self, game_map):
         self.log = logging.getLogger(self.__class__.__name__)
-        self.log.setLevel(logging.DEBUG)
+        self.log.setLevel(logging.INFO)
 
         self.game_map = game_map
 

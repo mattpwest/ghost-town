@@ -6,6 +6,9 @@ class MapState(BaseState):
                  combat_system, damage_system, render_map_system, render_ui_system, render_blit_system, basic_ai_system,
                  map_input_system):
         systems = [
+            render_map_system,
+            render_ui_system,
+            render_blit_system,
             action_system,
             map_input_system,
             basic_ai_system,
@@ -14,10 +17,7 @@ class MapState(BaseState):
             inventory_system,
             vision_system,
             combat_system,
-            damage_system,
-            render_map_system,
-            render_ui_system,
-            render_blit_system
+            damage_system
         ]
 
         BaseState.__init__(self, world, systems)
