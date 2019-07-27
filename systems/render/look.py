@@ -4,6 +4,7 @@ import esper
 import tcod as libtcod
 
 from components import Text, Position, Target, Render, Health
+from .util import draw_bar
 
 
 class RenderLookSystem(esper.Processor):
@@ -13,6 +14,8 @@ class RenderLookSystem(esper.Processor):
 
         self.map = game_map
         self.consoles = consoles
+        self.consoles_map = consoles.layers["map"]
+        self.consoles_ui = consoles.layers["ui"]
         self.config = config
 
         self.log.debug("Initialized!")
@@ -20,7 +23,7 @@ class RenderLookSystem(esper.Processor):
     def process(self):
         target = None
         for entity, (position, render, target) in self.world.get_components(Position, Render, Target):
-            libtcod.console_set_char_background(self.consoles.map, position.x, position.y, render.color,
+            libtcod.console_set_char_background(self.consoles_map.console, position.x, position.y, render.color,
                                                 libtcod.BKGND_SET)
             target = position
 
@@ -31,7 +34,16 @@ class RenderLookSystem(esper.Processor):
         y = 0
         w = self.config.ui.width - x
         h = self.config.ui.height
-        self.consoles.ui.draw_rect(x, y, w, h, ord(" "), fg=libtcod.black, bg=libtcod.black, bg_blend=libtcod.BKGND_SET)
+        self.consoles_ui.console.draw_rect(
+            x,
+            y,
+            w,
+            h,
+            ord(" "),
+            fg=libtcod.black,
+            bg=libtcod.black,
+            bg_blend=libtcod.BKGND_SET
+        )
 
         creature = self.map.entities[target.x][target.y]
         self.log.debug("Look creature: " + str(creature))
@@ -58,7 +70,16 @@ class RenderLookSystem(esper.Processor):
 
         y += 1
         for health in self.world.try_component(creature, Health):
-            self.draw_bar(x + 2, y, 'HP', health.points, health.maximum, libtcod.light_red, libtcod.darker_red)
+            draw_bar(
+                self.consoles_ui.console,
+                x + 2,
+                y,
+                'HP',
+                health.points,
+                health.maximum,
+                self.config.ui.bar_width,
+                libtcod.light_red, libtcod.darker_red
+            )
 
     def draw_items(self, items):
         x = self.config.ui.bar_width + 3
@@ -85,22 +106,5 @@ class RenderLookSystem(esper.Processor):
         for text in self.world.try_component(tile, Text):
             self.draw_text(text.description, x, y)
 
-    def draw_bar(self, x, y, name, value, maximum, bar_color, back_color):
-        console = self.consoles.ui
-        total_width = self.config.ui.bar_width
-
-        bar_width = int(float(value) / maximum * total_width)
-
-        libtcod.console_set_default_background(console, back_color)
-        libtcod.console_rect(console, x, y, total_width, 1, False, libtcod.BKGND_SCREEN)
-
-        libtcod.console_set_default_background(console, bar_color)
-        if bar_width > 0:
-            libtcod.console_rect(console, x, y, bar_width, 1, False, libtcod.BKGND_SCREEN)
-
-        libtcod.console_set_default_foreground(console, libtcod.white)
-        libtcod.console_print_ex(console, int(x + total_width / 2), y, libtcod.BKGND_NONE, libtcod.CENTER,
-                                 '{0}: {1}/{2}'.format(name, value, maximum))
-
     def draw_text(self, text, x, y, align=libtcod.LEFT):
-        libtcod.console_print_ex(self.consoles.ui, x, y, libtcod.BKGND_NONE, align, text)
+        libtcod.console_print_ex(self.consoles_ui.console, x, y, libtcod.BKGND_NONE, align, text)

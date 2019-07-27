@@ -30,38 +30,17 @@ class RenderBlitSystem(esper.Processor):
         self.render_buffers_to_screen()
 
     def render_buffers_to_screen(self):
-        libtcod.console_blit(
-            self.consoles.map,
-            0,
-            0,
-            self.config.display.width,
-            self.config.display.height - self.config.ui.height,
-            self.consoles.root,
-            0,
-            0
-        )
-
-        libtcod.console_blit(
-            self.consoles.ui,
-            0,
-            0,
-            self.config.ui.width,
-            self.config.ui.height,
-            self.consoles.root,
-            0,
-            self.config.display.height - self.config.ui.height,
-        )
-
-        libtcod.console_blit(
-            self.consoles.inventory,
-            0,
-            0,
-            self.config.display.width,
-            self.config.display.height,
-            self.consoles.root,
-            0,
-            0,
-        )
+        for layer in self.consoles.layers_active:
+            libtcod.console_blit(
+                layer.console,
+                layer.from_rect.x,
+                layer.from_rect.y,
+                layer.from_rect.width,
+                layer.from_rect.height,
+                self.consoles.root,
+                layer.to_point.x,
+                layer.to_point.y
+            )
 
         libtcod.console_flush()
 

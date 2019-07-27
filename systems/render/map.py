@@ -4,6 +4,7 @@ import esper
 import tcod as libtcod
 
 from components import Position, Render, Optics, Terrain, Creature, Player, Item
+from systems.render.consoles import ConsoleLayer, ConsoleRect, ConsolePoint
 
 
 class RenderMapSystem(esper.Processor):
@@ -15,10 +16,17 @@ class RenderMapSystem(esper.Processor):
         self.config = config
         self.consoles = consoles
 
-        self.consoles.map = libtcod.console.Console(
-            self.config.display.width,
-            self.config.display.height - self.config.ui.height
+        self.consoles_map = ConsoleLayer(
+            libtcod.console.Console(
+                self.config.display.width,
+                self.config.display.height - self.config.ui.height
+            ),
+            priority=1,
+            name="map",
+            from_rect=ConsoleRect(0, 0, self.config.display.width, self.config.display.height - self.config.ui.height),
+            to_point=ConsolePoint(0, 0)
         )
+        self.consoles.add_layer(self.consoles_map)
 
         self.log.debug("Initialized!")
 
@@ -47,7 +55,7 @@ class RenderMapSystem(esper.Processor):
         self.log.debug("Checked " + str(count) + " " + type_name + " - drew " + str(drew))
 
     def clear_buffer(self):
-        self.consoles.map.clear()
+        self.consoles_map.console.clear()
 
     def draw_entity(self, entity, position, render, optics):
         if self.log_draw:
@@ -63,11 +71,11 @@ class RenderMapSystem(esper.Processor):
         return 0
 
     def draw(self, position, char, color):
-        libtcod.console_set_default_foreground(self.consoles.map, color)
-        libtcod.console_put_char(self.consoles.map, position.x, position.y, char, libtcod.BKGND_NONE)
+        libtcod.console_set_default_foreground(self.consoles_map.console, color)
+        libtcod.console_put_char(self.consoles_map.console, position.x, position.y, char, libtcod.BKGND_NONE)
 
     def clear(self, x, y):
-        libtcod.console_put_char(self.consoles.map, x, y, ' ', libtcod.BKGND_NONE)
+        libtcod.console_put_char(self.consoles_map.console, x, y, ' ', libtcod.BKGND_NONE)
 
     def render_debug(self):
         top_left = Position(0, 0)

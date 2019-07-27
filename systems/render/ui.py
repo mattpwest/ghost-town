@@ -4,6 +4,8 @@ import esper
 import tcod as libtcod
 
 from components import Player, Text, Health
+from systems.render.consoles import ConsoleLayer, ConsoleRect, ConsolePoint
+from .util import draw_bar
 
 
 class RenderUiSystem(esper.Processor):
@@ -15,7 +17,15 @@ class RenderUiSystem(esper.Processor):
         self.consoles = consoles
         self.messages = message_log
 
-        self.consoles.ui = libtcod.console.Console(self.config.ui.width, self.config.ui.height)
+        self.consoles_ui = ConsoleLayer(
+            libtcod.console.Console(self.config.ui.width, self.config.ui.height),
+            priority=2,
+            name="ui",  # TODO: Rename this to HUD
+            from_rect=ConsoleRect(0, 0, self.config.ui.width, self.config.ui.height),
+            to_point=ConsolePoint(0, self.config.display.height - self.config.ui.height)
+        )
+        self.consoles.add_layer(self.consoles_ui)
+
         self.log.debug("Initialized!")
 
     def process(self):
@@ -26,39 +36,32 @@ class RenderUiSystem(esper.Processor):
             self.render_debug()
 
     def render_ui(self):
-        libtcod.console_set_default_foreground(self.consoles.ui, libtcod.white)
+        libtcod.console_set_default_foreground(self.consoles_ui.console, libtcod.white)
 
         x = 1
         y = 1
         for entity, (text, health, player) in self.world.get_components(Text, Health, Player):
-            self.draw_bar(x, y, 'HP', health.points, health.maximum, libtcod.light_red, libtcod.darker_red)
+            draw_bar(
+                self.consoles_ui.console,
+                x,
+                y,
+                'HP',
+                health.points,
+                health.maximum,
+                self.config.ui.bar_width,
+                libtcod.light_red,
+                libtcod.darker_red
+            )
 
         self.draw_messages(self.config.ui.bar_width + 3)
 
     def clear_buffer(self):
-        libtcod.console_set_default_background(self.consoles.ui, libtcod.black)
-        libtcod.console_clear(self.consoles.ui)
+        libtcod.console_set_default_background(self.consoles_ui.console, libtcod.black)
+        libtcod.console_clear(self.consoles_ui.console)
 
     def draw(self, x, y, char, color):
-        libtcod.console_set_default_foreground(self.consoles.ui, color)
-        libtcod.console_put_char(self.consoles.ui, x, y, char, libtcod.BKGND_NONE)
-
-    def draw_bar(self, x, y, name, value, maximum, bar_color, back_color):
-        console = self.consoles.ui
-        total_width = self.config.ui.bar_width
-
-        bar_width = int(float(value) / maximum * total_width)
-
-        libtcod.console_set_default_background(console, back_color)
-        libtcod.console_rect(console, x, y, total_width, 1, False, libtcod.BKGND_SCREEN)
-
-        libtcod.console_set_default_background(console, bar_color)
-        if bar_width > 0:
-            libtcod.console_rect(console, x, y, bar_width, 1, False, libtcod.BKGND_SCREEN)
-
-        libtcod.console_set_default_foreground(console, libtcod.white)
-        libtcod.console_print_ex(console, int(x + total_width / 2), y, libtcod.BKGND_NONE, libtcod.CENTER,
-                                 '{0}: {1}/{2}'.format(name, value, maximum))
+        libtcod.console_set_default_foreground(self.consoles_ui.console, color)
+        libtcod.console_put_char(self.consoles_ui.console, x, y, char, libtcod.BKGND_NONE)
 
     def render_debug(self):
         self.draw(0, 0, 'U', libtcod.red)
@@ -70,7 +73,7 @@ class RenderUiSystem(esper.Processor):
         y = 1
         size = self.config.ui.height - y
 
-        console = self.consoles.ui
+        console = self.consoles_ui.console
 
         messages = self.messages.log[-size:]
         color = None
@@ -79,7 +82,9 @@ class RenderUiSystem(esper.Processor):
                 color = messages[idx].color
                 libtcod.console_set_default_foreground(console, color)
 
-            self.draw_text(messages[idx].text, x, y + idx, )
+            self.draw_text(messages[idx].text, x, y + idx)
+
+        libtcod.console_set_default_foreground(self.consoles_ui.console, libtcod.white)
 
     def draw_text(self, text, x, y, align=libtcod.LEFT):
-        libtcod.console_print_ex(self.consoles.ui, x, y, libtcod.BKGND_NONE, align, text)
+        libtcod.console_print_ex(self.consoles_ui.console, x, y, libtcod.BKGND_NONE, align, text)

@@ -4,6 +4,7 @@ import esper
 import tcod as libtcod
 
 from components import Player, Text, Inventory
+from systems.render.consoles import ConsoleLayer, ConsoleRect, ConsolePoint
 
 
 class RenderInventorySystem(esper.Processor):
@@ -15,7 +16,16 @@ class RenderInventorySystem(esper.Processor):
         self.consoles = consoles
         self.messages = message_log
 
-        self.consoles.inventory = libtcod.console.Console(self.config.ui.width, self.config.ui.height)
+        self.consoles_inventory = ConsoleLayer(
+            libtcod.console.Console(self.config.ui.width, self.config.ui.height),
+            priority=3,
+            name="inventory",
+            from_rect=ConsoleRect(0, 0, self.config.ui.width, self.config.ui.height),
+            to_point=ConsolePoint(0, 0)
+        )
+        self.consoles.add_layer(self.consoles_inventory)
+        self.consoles.disable_layer(self.consoles_inventory)
+
         self.log.debug("Initialized!")
 
     def process(self):
@@ -26,7 +36,7 @@ class RenderInventorySystem(esper.Processor):
             self.render_debug()
 
     def render_ui(self):
-        libtcod.console_set_default_foreground(self.consoles.ui, libtcod.white)
+        libtcod.console_set_default_foreground(self.consoles_inventory.console, libtcod.white)
 
         x = 0
         y = 0
@@ -35,12 +45,12 @@ class RenderInventorySystem(esper.Processor):
             self.draw_inventory(x, y, inventory)
 
     def clear_buffer(self):
-        libtcod.console_set_default_background(self.consoles.inventory, libtcod.black)
-        libtcod.console_clear(self.consoles.inventory)
+        libtcod.console_set_default_background(self.consoles_inventory.console, libtcod.black)
+        libtcod.console_clear(self.consoles_inventory.console)
 
     def draw(self, x, y, char, color):
-        libtcod.console_set_default_foreground(self.consoles.inventory, color)
-        libtcod.console_put_char(self.consoles.inventory, x, y, char, libtcod.BKGND_NONE)
+        libtcod.console_set_default_foreground(self.consoles_inventory.console, color)
+        libtcod.console_put_char(self.consoles_inventory.console, x, y, char, libtcod.BKGND_NONE)
 
     def render_debug(self):
         self.draw(0, 0, 'I', libtcod.red)
@@ -51,7 +61,7 @@ class RenderInventorySystem(esper.Processor):
     def draw_inventory(self, x, y, inventory):
         width = 15
         height = 15
-        libtcod.console_rect(self.consoles.inventory, x, y, width, height, True)
+        libtcod.console_rect(self.consoles_inventory.console, x, y, width, height, True)
 
         self.draw_text(" Inventory ", x, y)
         y += 2
@@ -66,4 +76,4 @@ class RenderInventorySystem(esper.Processor):
             y += 1
 
     def draw_text(self, text, x, y, align=libtcod.LEFT):
-        libtcod.console_print_ex(self.consoles.inventory, x, y, libtcod.BKGND_NONE, align, text)
+        libtcod.console_print_ex(self.consoles_inventory.console, x, y, libtcod.BKGND_NONE, align, text)
