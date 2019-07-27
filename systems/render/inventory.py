@@ -16,11 +16,13 @@ class RenderInventorySystem(esper.Processor):
         self.consoles = consoles
         self.messages = message_log
 
+        width = self.config.inventory.width
+        height = self.config.inventory.height
         self.consoles_inventory = ConsoleLayer(
-            libtcod.console.Console(self.config.ui.width, self.config.ui.height),
+            libtcod.console.Console(width, height),
             priority=3,
             name="inventory",
-            from_rect=ConsoleRect(0, 0, self.config.ui.width, self.config.ui.height),
+            from_rect=ConsoleRect(0, 0, width, height),
             to_point=ConsolePoint(0, 0)
         )
         self.consoles.add_layer(self.consoles_inventory)
@@ -59,21 +61,26 @@ class RenderInventorySystem(esper.Processor):
         self.draw(self.config.ui.width - 1, self.config.ui.height - 1, 'I', libtcod.red)
 
     def draw_inventory(self, x, y, inventory):
-        width = 15
-        height = 15
-        libtcod.console_rect(self.consoles_inventory.console, x, y, width, height, True)
+        width = self.config.inventory.width
+        height = self.config.inventory.height
+        libtcod.console_set_default_background(self.consoles_inventory.console, libtcod.desaturated_blue)
+        libtcod.console_rect(self.consoles_inventory.console, x, y, width, height, True, libtcod.BKGND_SCREEN)
 
-        self.draw_text(" Inventory ", x, y)
+        self.draw_text(" Inventory ", x + int(width / 2), y, libtcod.CENTER)
         y += 2
         for idx in range(0, inventory.limit):
             if idx < len(inventory.items):
                 item = inventory.items[idx]
                 item_text = self.world.component_for_entity(item, Text)
-                self.draw_text(chr(ord('a') + idx) + ". " + item_text.pronoun + " " + item_text.noun, x, y)
+                libtcod.console_set_default_foreground(self.consoles_inventory.console, libtcod.white)
+                self.draw_text(" " + chr(ord('a') + idx) + ". " + item_text.pronoun + " " + item_text.noun, x, y)
             else:
-                self.draw_text(chr(ord('a') + idx) + ". ", x, y)
+                libtcod.console_set_default_foreground(self.consoles_inventory.console, libtcod.gray)
+                self.draw_text(" " + chr(ord('a') + idx) + ". ", x, y)
 
             y += 1
+
+        libtcod.console_set_default_foreground(self.consoles_inventory.console, libtcod.white)
 
     def draw_text(self, text, x, y, align=libtcod.LEFT):
         libtcod.console_print_ex(self.consoles_inventory.console, x, y, libtcod.BKGND_NONE, align, text)

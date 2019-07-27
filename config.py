@@ -9,6 +9,7 @@ class Config:
 
         self.display = DisplayConfig(self.config['display'])
         self.ui = UIConfig(self.config['ui'])
+        self.inventory = InventoryConfig(self.config['inventory'])
         self.map = MapConfig(self.config['map'])
         self.vision = VisionConfig(self.config['vision'])
 
@@ -44,6 +45,11 @@ class UIConfig(DimensionConfig):
 
         self.bar_width = config.getint('bar_width')
         self.debug_position = config.getboolean('debug_position')
+
+
+class InventoryConfig(DimensionConfig):
+    def __init__(self, config):
+        DimensionConfig.__init__(self, config)
 
 
 class MapConfig(DimensionConfig):
