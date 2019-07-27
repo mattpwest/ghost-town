@@ -11,7 +11,7 @@ from binding_specs import RootModuleSpec
 
 class MainGame:
     def __init__(self, game_state, world, game_map, entity_factory,
-                 map_state, dead_state, look_state):
+                 map_state, dead_state, look_state, inventory_state):
         game_map.generate_map()
         self.add_player(entity_factory, game_map)
 
@@ -19,6 +19,7 @@ class MainGame:
             dead_state.for_state(): dead_state,
             look_state.for_state(): look_state,
             map_state.for_state(): map_state,
+            inventory_state.for_state(): inventory_state
         }
 
         game = game_state

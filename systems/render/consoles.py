@@ -3,3 +3,4 @@ class Consoles:
         self.root = None
         self.map = None
         self.ui = None
+        self.inventory = None

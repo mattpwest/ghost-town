@@ -6,6 +6,7 @@ class State(Enum):
     MAP = auto()
     DEAD = auto()
     LOOK = auto()
+    INVENTORY = auto()
     NONE = auto()
 
 

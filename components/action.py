@@ -33,3 +33,8 @@ class FullscreenAction(Action):
 class LookAction(Action):
     def __init__(self):
         Action.__init__(self, 0)
+
+
+class InventoryAction(Action):
+    def __init__(self):
+        Action.__init__(self, 0)

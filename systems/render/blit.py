@@ -52,6 +52,17 @@ class RenderBlitSystem(esper.Processor):
             self.config.display.height - self.config.ui.height,
         )
 
+        libtcod.console_blit(
+            self.consoles.inventory,
+            0,
+            0,
+            self.config.display.width,
+            self.config.display.height,
+            self.consoles.root,
+            0,
+            0,
+        )
+
         libtcod.console_flush()
 
         self.log.debug("BLITTED consoles to screen.")

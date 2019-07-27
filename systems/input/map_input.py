@@ -46,6 +46,8 @@ def handle_keys(event):
         return PickupAction()
     elif event.sym == keys.K_l:
         return LookAction()
+    elif event.sym == keys.K_i:
+        return InventoryAction()
     elif event.sym == keys.K_DECIMALSEPARATOR:
         return NoAction()
     elif event.sym == keys.K_RETURN and event.mod & tcod.event.KMOD_ALT:
