@@ -12,11 +12,11 @@ class EntityFactory:
         return self.world.create_entity(
             components.Actor(initial=100),
             components.Position(x, y),
-            components.Render('@', libtcod.turquoise),
+            components.Render("@", libtcod.turquoise),
             components.Tangible(True),
             components.Optics(transparent=True),
             components.Player(),
-            components.Text('Matt', 'ghost', 'A creepy old ghost...'),
+            components.Text("Matt", "ghost", "A creepy old ghost..."),
             components.Health(30),
             components.Fighter(5, 2),
             components.Inventory(5)
@@ -27,11 +27,11 @@ class EntityFactory:
         return self.world.create_entity(
             components.Actor(),
             components.Position(x, y),
-            components.Render('o', libtcod.desaturated_green),
+            components.Render("o", libtcod.desaturated_green),
             components.Tangible(True),
             components.Optics(transparent=True),
             components.Creature(),
-            components.Text('orc', description='A massive snarling orc'),
+            components.Text("orc", description="A massive snarling orc"),
             components.Health(10),
             components.Fighter(3, 0)
         )
@@ -41,11 +41,11 @@ class EntityFactory:
         return self.world.create_entity(
             components.Actor(),
             components.Position(x, y),
-            components.Render('T', libtcod.darker_green),
+            components.Render("T", libtcod.darker_green),
             components.Tangible(True),
             components.Optics(transparent=True),
             components.Creature(),
-            components.Text('troll', description='A slimy green troll'),
+            components.Text("troll", description="A slimy green troll"),
             components.Health(20),
             components.Fighter(5, 1)
         )
@@ -54,16 +54,20 @@ class EntityFactory:
         logging.debug("Adding corpse at (" + str(x) + ", " + str(y) + ")")
         return self.world.create_entity(
             components.Position(x, y),
-            components.Render('%', libtcod.darker_red),
+            components.Render("%", libtcod.darker_red),
             components.Optics(transparent=True, lit=True),
             components.Item(),
-            components.Text('corpse', 'a', description='A mutilated ' + creature_type + ' corpse.')
+            components.Text(
+                noun=creature_type.lower() + " corpse",
+                pronoun=pronoun_from_name(creature_type), 
+                description="A mutilated " + creature_type + " corpse."
+            )
         )
 
     def wall(self, x, y):
         return self.world.create_entity(
             components.Position(x, y),
-            components.Render('#', libtcod.dark_gray),
+            components.Render("#", libtcod.dark_gray),
             components.Tangible(True),
             components.Optics(transparent=False),
             components.Terrain(),
@@ -73,7 +77,7 @@ class EntityFactory:
     def floor(self, x, y):
         return self.world.create_entity(
             components.Position(x, y),
-            components.Render('.', libtcod.dark_gray),
+            components.Render(".", libtcod.dark_gray),
             components.Tangible(False),
             components.Optics(transparent=True),
             components.Terrain(),
@@ -83,6 +87,20 @@ class EntityFactory:
     def target(self, x, y):
         return self.world.create_entity(
             components.Position(x, y),
-            components.Render('', color=libtcod.yellow),
+            components.Render("", color=libtcod.yellow),
             components.Target()
         )
+
+
+vowels = ["a", "e", "i", "o", "u"]
+
+
+def pronoun_from_name(creature_type):
+    if creature_type is None or len(creature_type) == 0:
+        return "a"
+
+    first_char = creature_type.lower()[0]
+    if first_char in vowels:
+        return "an"
+    else:
+        return "a"

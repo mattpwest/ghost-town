@@ -69,7 +69,7 @@ class RenderInventorySystem(esper.Processor):
             if idx < len(inventory.items):
                 item = inventory.items[idx]
                 item_text = self.world.component_for_entity(item, Text)
-                self.draw_text(chr(ord('a') + idx) + ". " + item_text.description, x, y)
+                self.draw_text(chr(ord('a') + idx) + ". " + item_text.pronoun + " " + item_text.noun, x, y)
             else:
                 self.draw_text(chr(ord('a') + idx) + ". ", x, y)
 

@@ -20,14 +20,14 @@ class InventorySystem(esper.Processor):
         for entity, (actor, position, inventory, action) \
                 in self.world.get_components(Actor, Position, Inventory, PickupAction):
 
-            if len(inventory.items) >= inventory.limit:
-                self.messages.add('You don''t have room for that item!', libtcod.orange)
-                self.world.remove_component(entity, PickupAction)
-                return
-
             items = self.map.items[position.x][position.y]
             if len(items) == 0:
                 self.messages.add('There is nothing to pick up here...')
+                self.world.remove_component(entity, PickupAction)
+                return
+
+            if len(inventory.items) >= inventory.limit:
+                self.messages.add('You don''t have room for that item!', libtcod.orange)
                 self.world.remove_component(entity, PickupAction)
                 return
 
