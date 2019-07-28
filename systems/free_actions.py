@@ -1,3 +1,5 @@
+import logging
+
 import esper
 import tcod as libtcod
 
@@ -8,6 +10,9 @@ from states import State
 
 class FreeActionsSystem(esper.Processor):
     def __init__(self, game_state, entity_factory):
+        self.log = logging.getLogger(self.__class__.__name__)
+        self.log.setLevel(logging.INFO)
+
         self.game = game_state
         self.entity_factory = entity_factory
 
@@ -23,6 +28,7 @@ class FreeActionsSystem(esper.Processor):
             self.world.remove_component(entity, FullscreenAction)
 
         for entity, (actor, action) in self.world.get_components(Actor, NoAction):
+            self.log.debug("NoAction reduces %s's %s energy by %s", entity, actor.energy, action.cost)
             actor.energy -= action.cost
 
             self.world.remove_component(entity, NoAction)

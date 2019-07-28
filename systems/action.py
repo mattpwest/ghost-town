@@ -1,5 +1,4 @@
 import logging
-import sys
 
 import esper
 
@@ -24,16 +23,30 @@ class ActionSystem(esper.Processor):
 
         self.log.debug("Initialized!")
 
+        self.time = 0
+
     def process(self):
+        time = 0
+        cannot_act = []
         for entity, actor in self.world.get_component(Actor):
             if not self.can_act(actor):
-                self.tick(entity, actor)
+                cannot_act.append((entity, actor))
             else:
                 self.log.debug(str(entity) + " is ready to act.")
+                return
 
-    def tick(self, entity, actor):
-        actor.energy += actor.gain
-        self.log.debug('Tick %s, energy=%s', entity, actor.energy)
+        for inactive in cannot_act:
+            entity = inactive[0]
+            actor = inactive[1]
+
+            actor.energy += actor.gain
+            self.log.debug("Ticked %s, energy=%s", entity, actor.energy)
+
+            time = max(time, actor.gain)
+
+        if time != 0:
+            self.time += time
+            self.log.info("%s time has passed...", str(self.time))
 
     def can_act(self, actor):
         return actor.energy >= actor.cost

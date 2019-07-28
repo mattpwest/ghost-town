@@ -22,6 +22,11 @@ class DropAction(Action):
         self.item = item
 
 
+class DrinkAction(Action):
+    def __init__(self):
+        Action.__init__(self, "Drink", 1000)
+
+
 class NoAction(Action):
     def __init__(self):
         Action.__init__(self, "Nothing", 1000)
