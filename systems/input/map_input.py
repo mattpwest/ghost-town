@@ -46,7 +46,7 @@ class MapInputSystem(esper.Processor):
         elif event.sym == keys.K_l:
             return LookAction()
         elif event.sym == keys.K_i:
-            return InventoryAction()
+            return OpenInventoryAction()
         elif event.sym == keys.K_PERIOD:
             return NoAction()
         elif event.sym == keys.K_RETURN and event.mod & tcod.event.KMOD_ALT:

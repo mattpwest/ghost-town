@@ -9,3 +9,4 @@ from .inventory_actions import *
 from .inventory_pickup import *
 from .ai import *
 from .input import *
+from .effects import *

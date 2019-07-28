@@ -6,7 +6,7 @@ import esper
 import tcod.event
 import tcod.event_constants as keys
 
-from components import Player, Action
+from components import Player, InventoryAction, TargetType
 from states import State, Inventory
 
 
@@ -38,21 +38,21 @@ class InventoryInputSystem(esper.Processor):
                 item = inventory.items[inventory.selected]
                 actions = []
                 for component in self.world.components_for_entity(item):
-                    if isinstance(component, Action):
+                    if isinstance(component, InventoryAction):
                         actions.append(component)
 
                 action = actions[inventory.selected_action]
-                self.world.add_component(player, copy.copy(action))
+                action_to_execute = copy.copy(action)
+                if action_to_execute.target_type == TargetType.SELF:
+                    action_to_execute.target = player
+                    self.world.add_component(player, action_to_execute)
+                # else: TODO: Deal with targeted actions...
 
                 # Exit inventory, reset selections for next activation
                 self.game.new_state = State.MAP
                 inventory.selected = -1
                 inventory.selected_action = -1
 
-                # TODO: Deal with targeted actions...
-
-                # if action.can_target.__contains__(TargetTypes.SELF):
-                #     self.world.add_component(player, )
                 continue
 
             selection_delta = action["select"]

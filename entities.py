@@ -86,11 +86,14 @@ class EntityFactory:
                 pronoun=pronoun_from_name("healing potion"),
                 description="A bubbling red potion with miraculous healing powers."
             ),
-            components.HealingEffect(hit_points=5, duration=3)
+            components.HealingEffect(hit_points=5, duration=3000, interval=1000)
         )
 
         drop_action = components.DropAction(item)
         self.world.add_component(item, drop_action)
+
+        drink_action = components.DrinkAction(item)
+        self.world.add_component(item, drink_action)
 
         return item
 
