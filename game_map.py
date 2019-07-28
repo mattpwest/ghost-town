@@ -55,6 +55,7 @@ class GameMap:
                 self.connect_rooms(new_room, self.rooms[len(self.rooms) - 1])
 
             self.place_entities(new_room, self.config.room_max_monsters)
+            self.place_items(new_room, self.config.room_max_items)
 
             self.rooms.append(new_room)
 
@@ -112,6 +113,16 @@ class GameMap:
                     monster = self.factory.troll(x, y)
 
                 self.entities[x][y] = monster
+
+    def place_items(self, room, room_max_items):
+        logging.debug("Placing monsters...")
+
+        number = randint(0, room_max_items)
+        for i in range(number):
+            x = randint(room.x1 + 1, room.x2 - 1)
+            y = randint(room.y1 + 1, room.y2 - 1)
+
+            self.items[x][y].append(self.factory.potion_healing(x, y))
 
 
 class Rect:

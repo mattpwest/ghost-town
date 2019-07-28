@@ -5,6 +5,7 @@ from .vision import *
 from .combat import *
 from .damage import *
 from .render import *
-from .inventory import *
+from .inventory_actions import *
+from .inventory_pickup import *
 from .ai import *
 from .input import *

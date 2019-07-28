@@ -1,3 +1,4 @@
+from components import Inventory
 from states import BaseState, State
 
 
@@ -20,6 +21,12 @@ class InventoryState(BaseState):
         super().on_enter()
 
         self.consoles.enable_layer(self.consoles_inventory)
+
+        for entity, inventory in self.world.get_component(Inventory):
+            if len(inventory.items) > 0:
+                inventory.selected = 0
+            else:
+                inventory.selected = 1
 
     def on_leave(self):
         super().on_leave()

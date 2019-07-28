@@ -6,6 +6,9 @@ import components as components
 
 class EntityFactory:
     def __init__(self, world):
+        self.log = logging.getLogger(self.__class__.__name__)
+        self.log.setLevel(logging.INFO)
+
         self.world = world
     
     def player(self, x, y):
@@ -23,7 +26,7 @@ class EntityFactory:
         )
 
     def orc(self, x, y):
-        logging.debug("Adding orc at (" + str(x) + ", " + str(y) + ")")
+        self.log.debug("Adding orc at (" + str(x) + ", " + str(y) + ")")
         return self.world.create_entity(
             components.Actor(),
             components.Position(x, y),
@@ -37,7 +40,7 @@ class EntityFactory:
         )
 
     def troll(self, x, y):
-        logging.debug("Adding troll at (" + str(x) + ", " + str(y) + ")")
+        self.log.debug("Adding troll at (" + str(x) + ", " + str(y) + ")")
         return self.world.create_entity(
             components.Actor(),
             components.Position(x, y),
@@ -51,8 +54,9 @@ class EntityFactory:
         )
 
     def corpse(self, x, y, creature_type):
-        logging.debug("Adding corpse at (" + str(x) + ", " + str(y) + ")")
-        return self.world.create_entity(
+        self.log.debug("Adding corpse at (" + str(x) + ", " + str(y) + ")")
+
+        item = self.world.create_entity(
             components.Position(x, y),
             components.Render("%", libtcod.darker_red),
             components.Optics(transparent=True, lit=True),
@@ -63,6 +67,32 @@ class EntityFactory:
                 description="A mutilated " + creature_type + " corpse."
             )
         )
+
+        drop_action = components.DropAction(item)
+        self.world.add_component(item, drop_action)
+
+        return item
+
+    def potion_healing(self, x, y):
+        self.log.debug("Adding healing potion at (" + str(x) + ", " + str(y) + ")")
+
+        item = self.world.create_entity(
+            components.Position(x, y),
+            components.Render("!", libtcod.light_red),
+            components.Optics(transparent=True, lit=True),
+            components.Item(),
+            components.Text(
+                noun="healing potion",
+                pronoun=pronoun_from_name("healing potion"),
+                description="A bubbling red potion with miraculous healing powers."
+            ),
+            components.HealingEffect(hit_points=5, duration=3)
+        )
+
+        drop_action = components.DropAction(item)
+        self.world.add_component(item, drop_action)
+
+        return item
 
     def wall(self, x, y):
         return self.world.create_entity(
