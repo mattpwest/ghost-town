@@ -66,3 +66,11 @@ class DropAction(InventoryAction):
 class DrinkAction(InventoryAction):
     def __init__(self, item):
         InventoryAction.__init__(self, "Drink", 1000, item)
+
+
+class ThrowAction(InventoryAction):
+    def __init__(self, item, distance):
+        InventoryAction.__init__(self, "Throw", 1000, item, target_type=TargetType.CREATURE)
+
+        self.distance = distance
+        self.target = None

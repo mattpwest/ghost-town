@@ -1,10 +1,11 @@
 import logging
 
 import esper
+import tcod
 import tcod.event
 import tcod.event_constants as keys
 
-from components import Target, Position, Optics
+from components import Target, Position, Optics, TargetType, Player
 from states import State
 
 
@@ -25,6 +26,22 @@ class TargetInputSystem(esper.Processor):
                 self.world.delete_entity(entity)
                 return
 
+            if action["trigger"] and target.action is not None:
+                if target.action.target_type == TargetType.CREATURE:
+                    creature = self.map.entities[position.x][position.y]
+                    if not creature:
+                        target.text = "Invalid target! Must be a creature..."
+                    else:
+                        target.action.target = creature
+
+                        for player_entity, player in self.world.get_component(Player):
+                            self.world.add_component(player_entity, target.action)
+
+                        self.game.new_state = State.MAP
+                        self.world.delete_entity(entity)
+
+                return
+
             tx = position.x + action["delta"][0]
             ty = position.y + action["delta"][1]
 
@@ -33,6 +50,7 @@ class TargetInputSystem(esper.Processor):
             if optics and optics.lit:
                 position.x = tx
                 position.y = ty
+                target.text = None
 
 
 def handle_input():
@@ -56,10 +74,12 @@ def handle_keys(event):
     elif event.sym == keys.K_RIGHT:
         return move(1, 0)
     elif event.sym == keys.K_ESCAPE:
-        return {"delta": (0, 0), "quit": True}
+        return {"delta": (0, 0), "quit": True, "trigger": False}
+    elif event.sym == keys.K_RETURN:
+        return {"delta": (0, 0), "quit": False, "trigger": True}
 
-    return {"delta": (0, 0), "quit": False}
+    return {"delta": (0, 0), "quit": False, "trigger": False}
 
 
 def move(x, y):
-    return {"delta": (x, y), "quit": False}
+    return {"delta": (x, y), "quit": False, "trigger": False}

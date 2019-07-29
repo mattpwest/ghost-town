@@ -22,9 +22,11 @@ class RenderLookSystem(esper.Processor):
 
     def process(self):
         target = None
+        target_text = None
         for entity, (position, render, target) in self.world.get_components(Position, Render, Target):
             libtcod.console_set_char_background(self.consoles_map.console, position.x, position.y, render.color,
                                                 libtcod.BKGND_SET)
+            target_text = target.text
             target = position
 
         if target is None:
@@ -61,6 +63,11 @@ class RenderLookSystem(esper.Processor):
         self.log.debug("Look tile: " + str(tile))
         if tile is not None:
             self.draw_tile(tile)
+
+        if target_text:
+            libtcod.console_set_default_foreground(self.consoles_ui.console, libtcod.orange)
+            self.draw_text(target_text, self.config.ui.bar_width + 3, 1)
+            libtcod.console_set_default_foreground(self.consoles_ui.console, libtcod.white)
 
     def draw_creature(self, creature):
         x = self.config.ui.bar_width + 3

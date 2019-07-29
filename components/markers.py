@@ -27,6 +27,9 @@ class Target(Movable):
     def __init__(self):
         Movable.__init__(self)
 
+        self.action = None
+        self.text = None
+
 
 class Static:
     def __init__(self):

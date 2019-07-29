@@ -12,7 +12,13 @@ class EntityFactory:
         self.world = world
     
     def player(self, x, y):
-        return self.world.create_entity(
+        inventory = components.Inventory(5)
+
+        healing_potion = self.potion_healing(x, y)
+        self.world.remove_component(healing_potion, components.Item)  # Disable drawing on map
+        inventory.items.append(healing_potion)
+
+        player = self.world.create_entity(
             components.Actor(initial=100),
             components.Position(x, y),
             components.Render("@", libtcod.turquoise),
@@ -22,8 +28,10 @@ class EntityFactory:
             components.Text("Matt", "ghost", "A creepy old ghost..."),
             components.Health(30),
             components.Fighter(5, 2),
-            components.Inventory(5)
+            inventory
         )
+
+        return player
 
     def orc(self, x, y):
         self.log.debug("Adding orc at (" + str(x) + ", " + str(y) + ")")
@@ -94,6 +102,9 @@ class EntityFactory:
 
         drink_action = components.DrinkAction(item)
         self.world.add_component(item, drink_action)
+
+        throw_action = components.ThrowAction(item, distance=4)
+        self.world.add_component(item, throw_action)
 
         return item
 

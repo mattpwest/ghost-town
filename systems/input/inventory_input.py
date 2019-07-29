@@ -6,18 +6,20 @@ import esper
 import tcod.event
 import tcod.event_constants as keys
 
-from components import Player, InventoryAction, TargetType
+from components import Player, InventoryAction, TargetType, Position, Target
 from states import State, Inventory
 
 
 class InventoryInputSystem(esper.Processor):
-    def __init__(self, game_map, game_state):
+    def __init__(self, game_map, game_state, entity_factory):
         self.log = logging.getLogger(self.__class__.__name__)
         self.log.setLevel(logging.INFO)
 
+        self.mode = Mode.ITEMS
+
         self.map = game_map
         self.game = game_state
-        self.mode = Mode.ITEMS
+        self.entity_factory = entity_factory
 
     def process(self):
         action = handle_input()
@@ -46,7 +48,16 @@ class InventoryInputSystem(esper.Processor):
                 if action_to_execute.target_type == TargetType.SELF:
                     action_to_execute.target = player
                     self.world.add_component(player, action_to_execute)
-                # else: TODO: Deal with targeted actions...
+                else:
+                    position = self.world.component_for_entity(player, Position)
+                    target = self.entity_factory.target(position.x, position.y)
+                    self.world.component_for_entity(target, Target).action = action_to_execute
+
+                    # Exit inventory, go to LOOK state, reset selections for next inventory activation
+                    inventory.selected = -1
+                    inventory.selected_action = -1
+                    self.game.new_state = State.LOOK
+                    return
 
                 # Exit inventory, reset selections for next activation
                 self.game.new_state = State.MAP

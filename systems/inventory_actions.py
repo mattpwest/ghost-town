@@ -3,7 +3,7 @@ import logging
 
 import esper
 
-from components import Inventory, Item, Text, DropAction, DrinkAction, Effect
+from components import Inventory, Item, Text, DropAction, DrinkAction, Effect, ThrowAction
 from components.actor import Actor
 from components.position import Position
 
@@ -47,3 +47,19 @@ class InventoryActionsSystem(esper.Processor):
 
             actor.energy -= action.cost
             self.world.remove_component(entity, DrinkAction)
+
+        for entity, (actor, inventory, action) in self.world.get_components(Actor, Inventory, ThrowAction):
+            target_text = self.world.component_for_entity(action.target, Text)
+
+            for component in self.world.components_for_entity(action.item):
+                if isinstance(component, Effect):
+                    self.world.add_component(action.target, copy.copy(component))
+
+                if isinstance(component, Text):
+                    self.messages.add("You throw the " + component.noun + " at the " + target_text.noun + ".")
+
+            inventory.items.remove(action.item)
+            self.world.delete_entity(action.item)
+
+            actor.energy -= action.cost
+            self.world.remove_component(entity, ThrowAction)
