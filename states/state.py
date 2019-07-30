@@ -3,10 +3,13 @@ from enum import Enum, auto
 
 
 class State(Enum):
+    MENU = auto()
+    GENERATE = auto()
     MAP = auto()
     DEAD = auto()
     LOOK = auto()
     INVENTORY = auto()
+    QUIT = auto()
     NONE = auto()
 
 

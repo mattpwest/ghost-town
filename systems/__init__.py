@@ -10,3 +10,4 @@ from .inventory_pickup import *
 from .ai import *
 from .input import *
 from .effects import *
+from .generate_map import *

@@ -31,7 +31,6 @@ class MapInputSystem(esper.Processor):
 
         return result
 
-
     def handle_keys(self, event):
         if event.sym == keys.K_UP:
             return move(0, -1)
@@ -52,7 +51,7 @@ class MapInputSystem(esper.Processor):
         elif event.sym == keys.K_RETURN and event.mod & tcod.event.KMOD_ALT:
             return FullscreenAction()
         elif event.sym == keys.K_ESCAPE:
-            return QuitAction()
+            return MenuAction()
 
         self.log.warning("No configured key pressed.")
         return {}

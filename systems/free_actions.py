@@ -3,8 +3,8 @@ import logging
 import esper
 import tcod as libtcod
 
-from components import Actor, LookAction, Player, Position, OpenInventoryAction
-from components.action import FullscreenAction, QuitAction, NoAction
+from components import Actor, LookAction, Player, Position, OpenInventoryAction, QuitAction
+from components.action import FullscreenAction, MenuAction, NoAction
 from states import State
 
 
@@ -18,9 +18,14 @@ class FreeActionsSystem(esper.Processor):
 
     def process(self):
         for entity, action in self.world.get_component(QuitAction):
-            self.game.running = False
+            self.game.new_state = State.QUIT
 
             self.world.remove_component(entity, QuitAction)
+
+        for entity, action in self.world.get_component(MenuAction):
+            self.game.new_state = State.MENU
+
+            self.world.remove_component(entity, MenuAction)
 
         for entity, action in self.world.get_component(FullscreenAction):
             libtcod.console_set_fullscreen(not libtcod.console_is_fullscreen())

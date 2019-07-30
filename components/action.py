@@ -29,6 +29,11 @@ class QuitAction(Action):
         Action.__init__(self, "Quit", 0)
 
 
+class MenuAction(Action):
+    def __init__(self):
+        Action.__init__(self, "Menu", 0)
+
+
 class FullscreenAction(Action):
     def __init__(self):
         Action.__init__(self, "Fullscreen", 0)

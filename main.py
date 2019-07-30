@@ -5,21 +5,30 @@ import pinject
 import systems
 import states
 
-
 from binding_specs import RootModuleSpec
 
 
 class MainGame:
-    def __init__(self, game_state, world, game_map, entity_factory,
-                 map_state, dead_state, look_state, inventory_state):
-        game_map.generate_map()
-        self.add_player(entity_factory, game_map)
-
+    def __init__(
+        self,
+        game_state,
+        world,
+        menu_state,
+        map_state,
+        dead_state,
+        look_state,
+        inventory_state,
+        quit_state,
+        generate_state
+    ):
         game_states = {
+            menu_state.for_state(): menu_state,
+            quit_state.for_state(): quit_state,
+            generate_state.for_state(): generate_state,
             dead_state.for_state(): dead_state,
             look_state.for_state(): look_state,
             map_state.for_state(): map_state,
-            inventory_state.for_state(): inventory_state
+            inventory_state.for_state(): inventory_state,
         }
 
         game = game_state
@@ -35,12 +44,6 @@ class MainGame:
                     game_states[game.state].on_enter()
 
             world.process()
-
-    def add_player(self, factory, game_map):
-        x = game_map.rooms[0].center().x
-        y = game_map.rooms[0].center().y
-        player_entity = factory.player(x, y)
-        game_map.entities[x][y] = player_entity
 
 
 def main():

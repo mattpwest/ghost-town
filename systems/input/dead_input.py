@@ -26,7 +26,7 @@ def handle_input():
     while result is None:
         for event in tcod.event.wait():
             if event.type == 'QUIT':
-                result = QuitAction()
+                result = MenuAction()
             elif event.type == 'KEYDOWN':
                 result = handle_keys(event)
 
@@ -49,6 +49,6 @@ def handle_keys(event):
     if event.sym == keys.K_RETURN and event.mod & tcod.event.KMOD_ALT:
         return FullscreenAction()
     elif event.sym == keys.K_ESCAPE:
-        return QuitAction()
+        return MenuAction()
 
     return NoAction()

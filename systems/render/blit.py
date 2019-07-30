@@ -41,7 +41,8 @@ class RenderBlitSystem(esper.Processor):
                 layer.to_point.x,
                 layer.to_point.y
             )
+            self.log.debug("Blitted %s...", layer.name)
 
         libtcod.console_flush()
 
-        self.log.debug("BLITTED consoles to screen.")
+        self.log.debug("Flushed blits to screen.")
