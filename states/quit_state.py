@@ -15,8 +15,8 @@ class QuitState(BaseState):
     def for_state():
         return State.QUIT
 
-    def on_enter(self):
-        super().on_enter()
+    def on_enter(self, from_state):
+        super().on_enter(from_state)
 
         # TODO: Force-save game
 

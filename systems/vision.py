@@ -3,22 +3,25 @@ import logging
 import esper
 import tcod as libtcod
 
-from components import Position, Optics, Tangible, Player
+from components import Position, Optics, Player
 
 
 class VisionSystem(esper.Processor):
-    def __init__(self, config):
+    def __init__(self, game_map, config):
         self.log = logging.getLogger(self.__class__.__name__)
         self.log.setLevel(logging.INFO)
 
+        self.map = game_map
         self.config = config
 
+        self.seed = -1
         self.fov_map = None
         self.x = -1
         self.y = -1
 
     def process(self):
-        if self.fov_map is None:
+        if self.fov_map is None or self.map.seed != self.seed:
+            self.seed = self.map.seed
             self.fov_map = self.initialize_fov()
 
         player = None

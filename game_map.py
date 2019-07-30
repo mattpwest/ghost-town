@@ -1,5 +1,7 @@
 import logging
-from random import randint
+import random
+from random import Random
+import sys
 
 from components import Tangible
 
@@ -18,6 +20,20 @@ class GameMap:
         self.items = self.initialize_items()
         self.entities = self.initialize_entities()
         self.rooms = []
+
+        self.seed = random.randint(0, sys.maxsize)
+        self.rng = Random(self.seed)
+
+    def clear(self):
+        self.world.clear_database()
+
+        self.tiles = self.initialize_tiles()
+        self.items = self.initialize_items()
+        self.entities = self.initialize_entities()
+        self.rooms = []
+
+        self.seed = random.randint(0, sys.maxsize)
+        self.rng = Random(self.seed)
 
     def initialize_tiles(self):
         return [[self.factory.wall(x, y) for y in range(self.config.height)] for x in range(self.config.width)]
@@ -38,11 +54,11 @@ class GameMap:
                        "}"
                        )
         for room_number in range(self.config.max_rooms):
-            w = randint(self.config.room_min_size, self.config.room_max_size)
-            h = randint(self.config.room_min_size, self.config.room_max_size)
+            w = self.rng.randint(self.config.room_min_size, self.config.room_max_size)
+            h = self.rng.randint(self.config.room_min_size, self.config.room_max_size)
 
-            x = randint(0, self.config.width - w - 1)
-            y = randint(0, self.config.height - h - 1)
+            x = self.rng.randint(0, self.config.width - w - 1)
+            y = self.rng.randint(0, self.config.height - h - 1)
 
             new_room = Rect(x, y, w, h)
 
@@ -70,7 +86,7 @@ class GameMap:
         center1 = room1.center()
         center2 = room2.center()
 
-        if randint(0, 1) == 1:
+        if self.rng.randint(0, 1) == 1:
             self.create_h_tunnel(center2.x, center1.x, center2.y)
             self.create_v_tunnel(center2.y, center1.y, center1.x)
         else:
@@ -99,15 +115,15 @@ class GameMap:
 
     def place_entities(self, room, max_monsters_per_room):
         logging.debug("Placing monsters...")
-        number_of_monsters = randint(0, max_monsters_per_room)
+        number_of_monsters = self.rng.randint(0, max_monsters_per_room)
 
         for i in range(number_of_monsters):
-            x = randint(room.x1 + 1, room.x2 - 1)
-            y = randint(room.y1 + 1, room.y2 - 1)
+            x = self.rng.randint(room.x1 + 1, room.x2 - 1)
+            y = self.rng.randint(room.y1 + 1, room.y2 - 1)
             logging.debug("Monster " + str(i) + " at (" + str(x) + ", " + str(y) + ")")
 
             if self.entities[x][y] is None:
-                if randint(0, 100) < 80:
+                if self.rng.randint(0, 100) < 80:
                     monster = self.factory.orc(x, y)
                 else:
                     monster = self.factory.troll(x, y)
@@ -117,10 +133,10 @@ class GameMap:
     def place_items(self, room, room_max_items):
         logging.debug("Placing monsters...")
 
-        number = randint(0, room_max_items)
+        number = self.rng.randint(0, room_max_items)
         for i in range(number):
-            x = randint(room.x1 + 1, room.x2 - 1)
-            y = randint(room.y1 + 1, room.y2 - 1)
+            x = self.rng.randint(room.x1 + 1, room.x2 - 1)
+            y = self.rng.randint(room.y1 + 1, room.y2 - 1)
 
             self.items[x][y].append(self.factory.potion_healing(x, y))
 

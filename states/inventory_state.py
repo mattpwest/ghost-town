@@ -17,8 +17,8 @@ class InventoryState(BaseState):
         self.consoles = consoles
         self.consoles_inventory = consoles.layers["inventory"]
 
-    def on_enter(self):
-        super().on_enter()
+    def on_enter(self, from_state):
+        super().on_enter(from_state)
 
         self.consoles.enable_layer(self.consoles_inventory)
 
@@ -28,8 +28,8 @@ class InventoryState(BaseState):
             else:
                 inventory.selected = 1
 
-    def on_leave(self):
-        super().on_leave()
+    def on_leave(self, to_state):
+        super().on_leave(to_state)
 
         self.consoles.disable_layer(self.consoles_inventory)
 

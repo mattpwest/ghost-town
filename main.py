@@ -35,13 +35,14 @@ class MainGame:
         while game.running:
             if game.new_state is not None and game.new_state != game.state:
                 if game.state in game_states:
-                    game_states[game.state].on_leave()
+                    game_states[game.state].on_leave(game.new_state)
 
+                from_state = game.state
                 game.state = game.new_state
                 game.new_state = None
 
                 if game.state in game_states:
-                    game_states[game.state].on_enter()
+                    game_states[game.state].on_enter(from_state)
 
             world.process()
 

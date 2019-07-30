@@ -25,7 +25,7 @@ class BaseState:
     def for_state():
         return State.NONE
 
-    def on_enter(self):
+    def on_enter(self, from_state):
         self.log.info("Entering " + type(self).__name__ + ":")
 
         len_systems = len(self.systems)
@@ -35,6 +35,6 @@ class BaseState:
             self.world.add_processor(processor, priority)
             self.log.debug("Added processor " + type(processor).__name__ + " at priority " + str(priority))
 
-    def on_leave(self):
+    def on_leave(self, to_state):
         for system in self.systems:
             self.world.remove_processor(type(system))

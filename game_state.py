@@ -7,6 +7,11 @@ class GameState:
         self.state = None
         self.new_state = start_state
 
+        self.menus = []
+        self.new_game()
+        self.menu_selected = 0
+
+    def new_game(self):
         self.menus = [
             {
                 "state": State.GENERATE,
@@ -17,4 +22,15 @@ class GameState:
                 "text": "Quit Game"
             }
         ]
-        self.menu_selected = 0
+
+    def resume_game(self):
+        self.menus = [
+            {
+                "state": State.MAP,
+                "text": "Resume"
+            },
+            {
+                "state": State.QUIT,
+                "text": "Quit Game"
+            }
+        ]
