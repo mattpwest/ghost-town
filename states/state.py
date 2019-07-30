@@ -10,6 +10,8 @@ class State(Enum):
     LOOK = auto()
     INVENTORY = auto()
     QUIT = auto()
+    SAVE = auto()
+    LOAD = auto()
     NONE = auto()
 
 

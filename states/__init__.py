@@ -6,3 +6,5 @@ from .inventory_state import *
 from .menu_state import *
 from .quit_state import *
 from .generate_state import *
+from .load_state import *
+from .save_state import *

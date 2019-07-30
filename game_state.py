@@ -18,6 +18,10 @@ class GameState:
                 "text": "New Game"
             },
             {
+                "state": State.LOAD,
+                "text": "Load Game"
+            },
+            {
                 "state": State.QUIT,
                 "text": "Quit Game"
             }
@@ -28,6 +32,10 @@ class GameState:
             {
                 "state": State.MAP,
                 "text": "Resume"
+            },
+            {
+                "state": State.SAVE,
+                "text": "Save Game"
             },
             {
                 "state": State.QUIT,

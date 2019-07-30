@@ -126,3 +126,6 @@ dmypy.json
 # PyCharm
 *.iml
 .idea
+
+# Save data
+data/saves

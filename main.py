@@ -19,7 +19,9 @@ class MainGame:
         look_state,
         inventory_state,
         quit_state,
-        generate_state
+        generate_state,
+        save_state,
+        load_state
     ):
         game_states = {
             menu_state.for_state(): menu_state,
@@ -29,6 +31,8 @@ class MainGame:
             look_state.for_state(): look_state,
             map_state.for_state(): map_state,
             inventory_state.for_state(): inventory_state,
+            save_state.for_state(): save_state,
+            load_state.for_state(): load_state
         }
 
         game = game_state
