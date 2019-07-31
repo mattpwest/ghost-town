@@ -1,9 +1,10 @@
 import logging
 import shelve
+from copy import deepcopy
 
 import esper
 
-from states import State
+from states import State, Inventory
 
 
 class SaveSystem(esper.Processor):
@@ -48,6 +49,19 @@ class SaveSystem(esper.Processor):
     def get_components(self, entity):
         result = []
         for component in self.world.components_for_entity(entity):
-            result.append(component)
+            if isinstance(component, Inventory):
+                copy = self.copy_inventory_and_nest_items(component)
+                result.append(copy)
+            else:
+                result.append(component)
 
         return result
+
+    def copy_inventory_and_nest_items(self, component):
+        items = []
+        for item in component.items:
+            items.append(self.get_components(item))
+        component.items = items
+        copy = deepcopy(component)
+        copy.items = items
+        return copy

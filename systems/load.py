@@ -4,7 +4,7 @@ import shelve
 
 import esper
 
-from components import Position, Terrain, Creature, Player, Item
+from components import Position, Terrain, Creature, Player, Item, InventoryAction, Inventory
 from states import State
 
 
@@ -29,6 +29,12 @@ class LoadSystem(esper.Processor):
                 entity = self.world.create_entity()
 
                 for component in components:
+                    if isinstance(component, InventoryAction):
+                        component.item = entity
+                    elif isinstance(component, Inventory):
+                        items = self.extract_and_create_items(component)
+                        component.items = items
+
                     self.world.add_component(entity, component)
 
         for entity, (position, terrain) in self.world.get_components(Position, Terrain):
@@ -44,3 +50,17 @@ class LoadSystem(esper.Processor):
             self.map.items[position.x][position.y].append(entity)
 
         self.game.new_state = State.MAP
+
+    def extract_and_create_items(self, component):
+        result = []
+        for item_components in component.items:
+            item = self.world.create_entity()
+            result.append(item)
+
+            for component in item_components:
+                if isinstance(component, InventoryAction):
+                    component.item = item
+
+                self.world.add_component(item, component)
+
+        return result
