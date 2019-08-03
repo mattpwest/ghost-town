@@ -14,3 +14,4 @@ from .inventory import *
 from .effects import *
 from .essence import *
 from .time import *
+from .possessor import *

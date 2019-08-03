@@ -2,7 +2,7 @@ import logging
 
 import esper
 
-from components import Tangible, Fighter, Attack
+from components import Tangible, Fighter, Attack, Player, Possessor, Essence, Possession
 from components.action import MoveAction
 from components.actor import Actor
 from components.position import Position
@@ -17,7 +17,8 @@ class MovementSystem(esper.Processor):
         self.messages = message_log
 
     def process(self):
-        for entity, (actor, position, action) in self.world.get_components(Actor, Position, MoveAction):
+        for entity, (actor, position, action, tangible) \
+                in self.world.get_components(Actor, Position, MoveAction, Tangible):
             target_x = position.x + action.delta[0]
             target_y = position.y + action.delta[1]
 
@@ -26,11 +27,12 @@ class MovementSystem(esper.Processor):
             tile = self.map.tiles[target_x][target_y]
             tile_tangible = self.world.component_for_entity(tile, Tangible)
 
-            if tile_tangible.blocks_physical:
-                message = "The rough wall is solid and unyielding."
-                self.log.info(message)
-                self.messages.add(message)
-                return
+            if tile_tangible.blocks_physical and tangible.blocks_physical:
+                if self.world.has_component(entity, Player):
+                    message = "The rough wall is solid and unyielding."
+                    self.log.info(message)
+                    self.messages.add(message)
+                continue
 
             target = self.map.entities[target_x][target_y]
             if target is not None and self.world.component_for_entity(target, Tangible).blocks_physical:
@@ -47,3 +49,5 @@ class MovementSystem(esper.Processor):
     def generate_attack(self, from_entity, to_entity):
         if self.world.has_component(from_entity, Fighter) and self.world.has_component(to_entity, Fighter):
             self.world.add_component(to_entity, Attack(from_entity))
+        elif self.world.has_component(from_entity, Possessor) and self.world.has_component(to_entity, Essence):
+            self.world.add_component(to_entity, Possession(from_entity))

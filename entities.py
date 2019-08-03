@@ -12,26 +12,18 @@ class EntityFactory:
         self.world = world
     
     def player(self, x, y):
-        inventory = components.Inventory(5)
-
-        healing_potion = self.potion_healing(x, y)
-        self.world.remove_component(healing_potion, components.Item)  # Disable drawing on map
-        inventory.items.append(healing_potion)
-
         player = self.world.create_entity(
             components.Actor(initial=0),
             components.Position(x, y),
             components.Render("@", libtcod.turquoise),
-            components.Tangible(True),
+            components.Tangible(False),
             components.Optics(transparent=True),
             components.Player(),
-            components.Text("Matt", "ghost", "A creepy old ghost..."),
-            components.Health(30),
-            components.Fighter(5, 2),
+            components.Text("ghost", "a", "A creepy old ghost..."),
+            components.Possessor(2.0),
             components.Essence(100),
             components.EssenceAbsorber(1, 10),
-            components.Time(),
-            inventory
+            components.Time()
         )
 
         return player
@@ -49,7 +41,8 @@ class EntityFactory:
             components.Health(10),
             components.Fighter(3, 0),
             components.Essence(20),
-            components.Time()
+            components.Time(),
+            components.Inventory()
         )
 
     def troll(self, x, y):
@@ -65,7 +58,8 @@ class EntityFactory:
             components.Health(20),
             components.Fighter(5, 1),
             components.Essence(40),
-            components.Time()
+            components.Time(),
+            components.Inventory()
         )
 
     def corpse(self, x, y, creature_type):

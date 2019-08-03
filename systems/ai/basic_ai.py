@@ -14,8 +14,10 @@ class BasicAiSystem(esper.Processor):
 
     def process(self):
         target = None
-        for player_entity, (position, player) in self.world.get_components(Position, Player):
+        target_visible = False
+        for player_entity, (position, player, optics) in self.world.get_components(Position, Player, Optics):
             target = position
+            target_visible = not optics.transparent
 
         for entity, (actor, optics, creature) in self.world.get_components(Actor, Optics, Creature):
             if actor.energy < actor.cost:
@@ -30,6 +32,11 @@ class BasicAiSystem(esper.Processor):
 
             if target is None:
                 self.log.debug("\tNo target - do nothing.")
+                self.world.add_component(entity, NoAction())
+                continue
+
+            if not target_visible:
+                self.log.debug("\tTarget is not visible - do nothing.")
                 self.world.add_component(entity, NoAction())
                 continue
 

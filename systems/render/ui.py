@@ -3,7 +3,7 @@ import logging
 import esper
 import tcod as libtcod
 
-from components import Player, Text, Health, Essence
+from components import Player, Text, Health, Essence, Render
 from systems.render.consoles import ConsoleLayer, ConsoleRect, ConsolePoint
 from .util import draw_bar
 
@@ -50,8 +50,9 @@ class RenderUiSystem(esper.Processor):
 
         x = 0
         y = 1
-        libtcod.console_set_default_foreground(self.consoles_ui.console, libtcod.white)
-        self.draw_text("GHOST", x + int(self.config.ui.bar_width / 2), y, align=libtcod.CENTER)
+        for entity, (text, render, player) in self.world.get_components(Text, Render, Player):
+            libtcod.console_set_default_foreground(self.consoles_ui.console, render.color)
+            self.draw_text(text.noun.upper(), x + int(self.config.ui.bar_width / 2), y, align=libtcod.CENTER)
 
         x = 0
         y = 2
