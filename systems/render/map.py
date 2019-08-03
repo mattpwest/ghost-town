@@ -3,7 +3,7 @@ import logging
 import esper
 import tcod as libtcod
 
-from components import Position, Render, Optics, Terrain, Creature, Player, Item
+from components import Position, Render, Optics, Terrain, Creature, Player, Item, Essence
 from systems.render.consoles import ConsoleLayer, ConsoleRect, ConsolePoint
 
 
@@ -33,13 +33,35 @@ class RenderMapSystem(esper.Processor):
     def process(self):
         self.clear_buffer()
 
-        self.render_type_to_buffer(Terrain)
+        self.render_terrain_and_essence()
         self.render_type_to_buffer(Item)
         self.render_type_to_buffer(Creature)
         self.render_type_to_buffer(Player)
 
         if self.config.map.debug_position:
             self.render_debug()
+
+    def render_terrain_and_essence(self):
+        type_name = str(Terrain.__name__)
+        self.log.debug("===== RENDERING MAP " + type_name + " =====")
+
+        essences = [[0 for y in range(self.config.map.height)] for x in range(self.config.map.width)]
+        for entity, (position, essence, terrain) in self.world.get_components(Position, Essence, Terrain):
+            self.log.debug("%d essence at (%d, %d) ", essence.value, position.x, position.y)
+            essences[position.x][position.y] += essence.value
+            self.log.debug("%d total essence at (%d, %d) ", essences[position.x][position.y], position.x, position.y)
+
+        libtcod.console_set_default_background(self.consoles_map.console, libtcod.black)
+
+        count = 0
+        drew = 0
+        for entity, (position, render, optics, unused_type) \
+                in self.world.get_components(Position, Render, Optics, Terrain):
+            bg_color = self.essence_color(essences[position.x][position.y])
+            drew += self.draw_entity(entity, position, render, optics, bg_color, libtcod.BKGND_SET)
+            count += 1
+
+        self.log.debug("Checked " + str(count) + " " + type_name + " - drew " + str(drew))
 
     def render_type_to_buffer(self, entity_type):
         type_name = str(entity_type.__name__)
@@ -57,12 +79,12 @@ class RenderMapSystem(esper.Processor):
     def clear_buffer(self):
         self.consoles_map.console.clear()
 
-    def draw_entity(self, entity, position, render, optics):
+    def draw_entity(self, entity, position, render, optics, bg_color=None, bg_mode=libtcod.BKGND_NONE):
         if self.log_draw:
             self.log.debug("Drawing entity: " + str(entity) + " (x=" + str(position.x) + ", y=" + str(position.y) +
                            ", char=" + render.char + ", color=" + str(render.color) + ")")
         if optics.lit:
-            self.draw(position, render.char, render.color)
+            self.draw(position, render.char, render.color, bg_color, bg_mode)
             return 1
         elif optics.explored:
             self.draw(position, render.char, render.color * libtcod.Color(50, 50, 50))
@@ -70,9 +92,12 @@ class RenderMapSystem(esper.Processor):
 
         return 0
 
-    def draw(self, position, char, color):
+    def draw(self, position, char, color, bg_color=None, bg_mode=libtcod.BKGND_NONE):
+        if bg_color is not None:
+            libtcod.console_set_default_background(self.consoles_map.console, bg_color)
         libtcod.console_set_default_foreground(self.consoles_map.console, color)
-        libtcod.console_put_char(self.consoles_map.console, position.x, position.y, char, libtcod.BKGND_NONE)
+        libtcod.console_put_char(self.consoles_map.console, position.x, position.y, char, bg_mode)
+        libtcod.console_set_default_background(self.consoles_map.console, libtcod.black)
 
     def clear(self, x, y):
         libtcod.console_put_char(self.consoles_map.console, x, y, ' ', libtcod.BKGND_NONE)
@@ -87,3 +112,10 @@ class RenderMapSystem(esper.Processor):
         self.draw(top_right, 'M', libtcod.red)
         self.draw(bottom_left, 'M', libtcod.red)
         self.draw(bottom_right, 'M', libtcod.red)
+
+    def essence_color(self, value):
+        percentage = 0.0
+        if value > 0:
+            percentage = value / 100.0
+
+        return libtcod.desaturated_blue * min(1.0, percentage)

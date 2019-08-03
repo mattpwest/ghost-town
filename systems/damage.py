@@ -1,8 +1,9 @@
+import copy
 import logging
 
 import esper
 
-from components import Damage, Text, Player, Health, Position, Tangible, Render
+from components import Damage, Text, Player, Health, Position, Tangible, Render, Essence, Terrain
 from states import State
 
 
@@ -29,6 +30,8 @@ class DamageSystem(esper.Processor):
 
                 self.describe_death(entity)
 
+                self.drop_essence(entity)
+
                 self.spawn_corpse(entity)
 
                 self.delete_entity(entity)
@@ -53,6 +56,15 @@ class DamageSystem(esper.Processor):
 
         self.log.info(message)
         self.messages.add(message)
+
+    def drop_essence(self, entity):
+        if not self.world.has_component(entity, Essence) or not self.world.has_component(entity, Position):
+            return
+
+        essence = copy.deepcopy(self.world.component_for_entity(entity, Essence))
+        position = copy.deepcopy(self.world.component_for_entity(entity, Position))
+
+        self.world.create_entity(essence, position, Terrain())
 
     def delete_entity(self, entity):
         if self.world.has_component(entity, Player):

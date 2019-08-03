@@ -28,6 +28,7 @@ class EntityFactory:
             components.Text("Matt", "ghost", "A creepy old ghost..."),
             components.Health(30),
             components.Fighter(5, 2),
+            components.Essence(100),
             inventory
         )
 
@@ -44,7 +45,8 @@ class EntityFactory:
             components.Creature(),
             components.Text("orc", description="A massive snarling orc"),
             components.Health(10),
-            components.Fighter(3, 0)
+            components.Fighter(3, 0),
+            components.Essence(20)
         )
 
     def troll(self, x, y):
@@ -58,7 +60,8 @@ class EntityFactory:
             components.Creature(),
             components.Text("troll", description="A slimy green troll"),
             components.Health(20),
-            components.Fighter(5, 1)
+            components.Fighter(5, 1),
+            components.Essence(40)
         )
 
     def corpse(self, x, y, creature_type):

@@ -14,5 +14,8 @@ def draw_bar(console, x, y, name, value, maximum, bar_width, bar_color, back_col
         libtcod.console_rect(console, x, y, bar_width, 1, False, libtcod.BKGND_SCREEN)
 
     libtcod.console_set_default_foreground(console, libtcod.white)
-    libtcod.console_print_ex(console, int(x + total_width / 2), y, libtcod.BKGND_NONE, libtcod.CENTER,
-                             '{0}: {1}/{2}'.format(name, value, maximum))
+    if name is None:
+        message = "{0}/{1}".format(value, maximum)
+    else:
+        message = "{0}: {1}/{2}".format(name, value, maximum)
+    libtcod.console_print_ex(console, int(x + total_width / 2), y, libtcod.BKGND_NONE, libtcod.CENTER, message)
