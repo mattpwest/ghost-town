@@ -19,7 +19,7 @@ class EntityFactory:
         inventory.items.append(healing_potion)
 
         player = self.world.create_entity(
-            components.Actor(initial=100),
+            components.Actor(initial=0),
             components.Position(x, y),
             components.Render("@", libtcod.turquoise),
             components.Tangible(True),
@@ -29,6 +29,8 @@ class EntityFactory:
             components.Health(30),
             components.Fighter(5, 2),
             components.Essence(100),
+            components.EssenceAbsorber(1, 10),
+            components.Time(),
             inventory
         )
 
@@ -46,7 +48,8 @@ class EntityFactory:
             components.Text("orc", description="A massive snarling orc"),
             components.Health(10),
             components.Fighter(3, 0),
-            components.Essence(20)
+            components.Essence(20),
+            components.Time()
         )
 
     def troll(self, x, y):
@@ -61,7 +64,8 @@ class EntityFactory:
             components.Text("troll", description="A slimy green troll"),
             components.Health(20),
             components.Fighter(5, 1),
-            components.Essence(40)
+            components.Essence(40),
+            components.Time()
         )
 
     def corpse(self, x, y, creature_type):
@@ -118,7 +122,8 @@ class EntityFactory:
             components.Tangible(True),
             components.Optics(transparent=False),
             components.Terrain(),
-            components.Text("wall", "a", description="A smooth stone wall.")
+            components.Text("wall", "a", description="A smooth stone wall."),
+            components.Essence(0),
         )
     
     def floor(self, x, y):
@@ -128,7 +133,8 @@ class EntityFactory:
             components.Tangible(False),
             components.Optics(transparent=True),
             components.Terrain(),
-            components.Text("floor", "a", description="A smooth stone floor.")
+            components.Text("floor", "a", description="A smooth stone floor."),
+            components.Essence(0),
         )
 
     def target(self, x, y):

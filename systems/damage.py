@@ -61,10 +61,11 @@ class DamageSystem(esper.Processor):
         if not self.world.has_component(entity, Essence) or not self.world.has_component(entity, Position):
             return
 
-        essence = copy.deepcopy(self.world.component_for_entity(entity, Essence))
-        position = copy.deepcopy(self.world.component_for_entity(entity, Position))
+        essence = self.world.component_for_entity(entity, Essence)
+        position = self.world.component_for_entity(entity, Position)
 
-        self.world.create_entity(essence, position, Terrain())
+        tile_essence = self.world.component_for_entity(self.map.tiles[position.x][position.y], Essence)
+        tile_essence.value += essence.value
 
     def delete_entity(self, entity):
         if self.world.has_component(entity, Player):

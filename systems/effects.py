@@ -2,7 +2,7 @@ import logging
 
 import esper
 
-from components import HealingEffect, Health
+from components import HealingEffect, Health, Time
 
 
 class EffectsSystem(esper.Processor):
@@ -13,9 +13,14 @@ class EffectsSystem(esper.Processor):
         self.log.debug("Initialized!")
 
     def process(self):
-        for entity, (health, effect) in self.world.get_components(Health, HealingEffect):
+        for entity, (health, effect, time) in self.world.get_components(Health, HealingEffect, Time):
+            if time.delta_time == 0:
+                continue
+
             self.log.debug("HealingEffect on %s has %s time passed and %s duration remaining.",
-                           entity, effect.time, effect.duration)
+                           entity, time.delta_time, effect.duration)
+
+            effect.time += time.delta_time
 
             if effect.time >= effect.interval:
                 effect.time -= effect.interval

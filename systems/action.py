@@ -2,7 +2,7 @@ import logging
 
 import esper
 
-from components import HealingEffect
+from components import Time
 from components.actor import Actor
 
 """
@@ -46,15 +46,17 @@ class ActionSystem(esper.Processor):
 
             delta_time = max(delta_time, actor.gain)
 
+        for entity, time in self.world.get_component(Time):
+            time.delta_time = 0
+            time.time = self.time
+
         if delta_time != 0:
             self.time += delta_time
             self.log.info("%s time has passed...", str(self.time))
 
-            # TODO: Bit crap - seems we have to do this per effect...
-            for entity, (actor, effect) in self.world.get_components(Actor, HealingEffect):
-                self.log.info("Allocating %s time to effect %s for entity %s",
-                              str(delta_time), str(effect), str(entity))
-                effect.time += delta_time
+            for entity, time in self.world.get_component(Time):
+                time.delta_time = delta_time
+                time.time = self.time
 
     def can_act(self, actor):
         return actor.energy >= actor.cost

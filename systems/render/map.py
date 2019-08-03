@@ -45,19 +45,13 @@ class RenderMapSystem(esper.Processor):
         type_name = str(Terrain.__name__)
         self.log.debug("===== RENDERING MAP " + type_name + " =====")
 
-        essences = [[0 for y in range(self.config.map.height)] for x in range(self.config.map.width)]
-        for entity, (position, essence, terrain) in self.world.get_components(Position, Essence, Terrain):
-            self.log.debug("%d essence at (%d, %d) ", essence.value, position.x, position.y)
-            essences[position.x][position.y] += essence.value
-            self.log.debug("%d total essence at (%d, %d) ", essences[position.x][position.y], position.x, position.y)
-
         libtcod.console_set_default_background(self.consoles_map.console, libtcod.black)
 
         count = 0
         drew = 0
-        for entity, (position, render, optics, unused_type) \
-                in self.world.get_components(Position, Render, Optics, Terrain):
-            bg_color = self.essence_color(essences[position.x][position.y])
+        for entity, (position, render, optics, essence, unused_type) \
+                in self.world.get_components(Position, Render, Optics, Essence, Terrain):
+            bg_color = self.essence_color(essence.value)
             drew += self.draw_entity(entity, position, render, optics, bg_color, libtcod.BKGND_SET)
             count += 1
 
@@ -116,6 +110,6 @@ class RenderMapSystem(esper.Processor):
     def essence_color(self, value):
         percentage = 0.0
         if value > 0:
-            percentage = value / 100.0
+            percentage = max(value / 100.0, 0.2)
 
         return libtcod.desaturated_blue * min(1.0, percentage)

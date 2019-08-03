@@ -13,3 +13,4 @@ from .effects import *
 from .generate_map import *
 from .load import *
 from .save import *
+from .essence_absorption import *
