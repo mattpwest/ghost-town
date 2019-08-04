@@ -27,6 +27,7 @@ class PossessionSystem(esper.Processor):
             cost = target_essence.value * possessor.cost_multiplier
             if cost > possessor_essence.value:
                 self.messages.add("Your essence is not strong enough to overcome the " + text.noun + ".")
+                self.world.remove_component(target, Possession)
                 continue
 
             possessor_essence.value -= cost
