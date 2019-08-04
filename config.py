@@ -75,4 +75,6 @@ class VisionConfig:
 
 class ColorConfig:
     def __init__(self):
-        self.message_critical = libtcod.dark_red
+        self.message_normal = libtcod.lighter_gray
+        self.message_warning = libtcod.orange
+        self.message_critical = libtcod.red

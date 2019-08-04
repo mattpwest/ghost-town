@@ -3,8 +3,7 @@ import logging
 import esper
 import tcod as libtcod
 
-from components import Damage, Text, Player, Health, Position, Tangible, Render, Essence
-from states import State
+from components import Damage, Text, Health, Position, Essence, Possessor, EssenceAbsorber
 
 
 class DamageSystem(esper.Processor):
@@ -31,7 +30,10 @@ class DamageSystem(esper.Processor):
 
                 self.describe_death(entity)
 
-                self.drop_essence(entity)
+                if self.world.has_component(entity, Possessor):
+                    self.exorcise(entity)
+                else:
+                    self.drop_essence(entity)
 
                 self.spawn_corpse(entity)
 
@@ -48,10 +50,10 @@ class DamageSystem(esper.Processor):
         self.map.entities[position.x][position.y] = None
 
     def describe_death(self, entity):
-        if self.world.has_component(entity, Player):
-            color = self.config.colors.message_critical
-            message = "You have died!"
-            self.game.new_state = State.DEAD
+        if self.world.has_component(entity, Possessor):
+            text = self.world.component_for_entity(entity, Text)
+            color = self.config.colors.message_warning
+            message = "The " + text.noun + " has died! Your spirit survives..."
         else:
             color = libtcod.white
             text = self.world.component_for_entity(entity, Text)
@@ -71,8 +73,21 @@ class DamageSystem(esper.Processor):
         tile_essence.value += essence.value
 
     def delete_entity(self, entity):
-        if self.world.has_component(entity, Player):
-            self.world.remove_component(entity, Tangible)
-            self.world.remove_component(entity, Render)
-        else:
-            self.world.delete_entity(entity)
+        self.world.delete_entity(entity)
+
+    def exorcise(self, entity):
+        position = self.world.component_for_entity(entity, Position)
+        possessor = self.world.component_for_entity(entity, Possessor)
+        essence = self.world.component_for_entity(entity, Essence)
+        absorber = self.world.component_for_entity(entity, EssenceAbsorber)
+
+        player = self.world.create_entity()
+        self.world.add_component(player, essence)
+        self.world.add_component(player, absorber)
+        for component in possessor.my_components:
+            self.world.add_component(player, component)
+
+            if isinstance(component, Position):
+                component.x = position.x
+                component.y = position.y
+                self.map.entities[position.x][position.y] = player
