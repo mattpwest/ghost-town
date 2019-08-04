@@ -14,3 +14,10 @@ class EssenceAbsorber:
         self.strength = strength
         self.frequency = frequency
         self.time_passed = 0
+
+
+class EssenceDrain:
+    def __init__(self, value, frequency=1000):
+        self.value = value
+        self.frequency = frequency
+        self.time_passed = 0

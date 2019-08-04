@@ -23,6 +23,7 @@ class EntityFactory:
             components.Possessor(2.0),
             components.Essence(100),
             components.EssenceAbsorber(1, 10),
+            components.EssenceDrain(0.1, 1000),
             components.Time()
         )
 

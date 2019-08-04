@@ -3,7 +3,8 @@ import logging
 
 import esper
 
-from components import Text, Player, Possession, Essence, Possessor, Creature, Render, EssenceAbsorber, Optics, Position
+from components import Text, Player, Possession, Essence, Possessor, Creature, Render, EssenceAbsorber, Optics, \
+    Position, EssenceDrain
 
 
 class PossessionSystem(esper.Processor):
@@ -20,6 +21,7 @@ class PossessionSystem(esper.Processor):
             possessor = self.world.component_for_entity(possession.from_entity, Possessor)
             possessor_essence = self.world.component_for_entity(possession.from_entity, Essence)
             possessor_absorber = self.world.component_for_entity(possession.from_entity, EssenceAbsorber)
+            possessor_drain = self.world.component_for_entity(possession.from_entity, EssenceDrain)
             possessor_position = self.world.component_for_entity(possession.from_entity, Position)
 
             cost = target_essence.value * possessor.cost_multiplier
@@ -48,6 +50,9 @@ class PossessionSystem(esper.Processor):
             self.world.add_component(target, copy.deepcopy(possessor))
             self.world.add_component(target, copy.deepcopy(possessor_essence))
             self.world.add_component(target, copy.deepcopy(possessor_absorber))
+            drain = copy.deepcopy(possessor_drain)
+            drain.value = drain.value * possessor.cost_multiplier
+            self.world.add_component(target, copy.deepcopy(possessor_drain))
             self.world.component_for_entity(target, Optics).transparent = False
 
             self.world.delete_entity(possession.from_entity)

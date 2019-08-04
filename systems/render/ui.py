@@ -57,12 +57,17 @@ class RenderUiSystem(esper.Processor):
         x = 0
         y = 2
         libtcod.console_set_default_foreground(self.consoles_ui.console, libtcod.white)
+        self.draw_text("ESSENCE", x + int(self.config.ui.bar_width / 2), y, align=libtcod.CENTER)
+
+        x = 0
+        y = 3
+        libtcod.console_set_default_foreground(self.consoles_ui.console, libtcod.white)
         for entity, (text, essence, player) in self.world.get_components(Text, Essence, Player):
             draw_bar(
                 self.consoles_ui.console,
                 x,
                 y,
-                "ESSENCE",
+                None,
                 essence.value,
                 essence.maximum,
                 self.config.ui.bar_width,
@@ -70,15 +75,18 @@ class RenderUiSystem(esper.Processor):
                 libtcod.desaturated_blue * 0.5
             )
 
-        x = 0
-        y = 3
-        libtcod.console_set_default_foreground(self.consoles_ui.console, libtcod.white)
         for entity, (text, health, player) in self.world.get_components(Text, Health, Player):
+            x = 0
+            y = 4
+            libtcod.console_set_default_foreground(self.consoles_ui.console, libtcod.white)
+            self.draw_text("HEALTH", x + int(self.config.ui.bar_width / 2), y, align=libtcod.CENTER)
+
+            y = 5
             draw_bar(
                 self.consoles_ui.console,
                 x,
                 y,
-                'HP',
+                None,
                 health.points,
                 health.maximum,
                 self.config.ui.bar_width,
