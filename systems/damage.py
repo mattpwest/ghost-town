@@ -1,14 +1,14 @@
-import copy
 import logging
 
 import esper
+import tcod as libtcod
 
-from components import Damage, Text, Player, Health, Position, Tangible, Render, Essence, Terrain
+from components import Damage, Text, Player, Health, Position, Tangible, Render, Essence
 from states import State
 
 
 class DamageSystem(esper.Processor):
-    def __init__(self, game_state, game_map, message_log, entity_factory):
+    def __init__(self, game_state, game_map, message_log, entity_factory, config):
         self.log = logging.getLogger(self.__class__.__name__)
         self.log.setLevel(logging.INFO)
 
@@ -16,6 +16,7 @@ class DamageSystem(esper.Processor):
         self.map = game_map
         self.messages = message_log
         self.entity_factory = entity_factory
+        self.config = config
 
     def process(self):
         for entity, (health, damage) in self.world.get_components(Health, Damage):
@@ -48,14 +49,16 @@ class DamageSystem(esper.Processor):
 
     def describe_death(self, entity):
         if self.world.has_component(entity, Player):
+            color = self.config.colors.message_critical
             message = "You have died!"
             self.game.new_state = State.DEAD
         else:
+            color = libtcod.white
             text = self.world.component_for_entity(entity, Text)
             message = "The " + text.noun + " dies!"
 
         self.log.info(message)
-        self.messages.add(message)
+        self.messages.add(message, color)
 
     def drop_essence(self, entity):
         if not self.world.has_component(entity, Essence) or not self.world.has_component(entity, Position):

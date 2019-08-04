@@ -12,6 +12,7 @@ class Config:
         self.inventory = InventoryConfig(self.config["inventory"])
         self.map = MapConfig(self.config["map"])
         self.vision = VisionConfig(self.config["vision"])
+        self.colors = ColorConfig()
 
 
 class DimensionConfig:
@@ -70,3 +71,8 @@ class VisionConfig:
         self.light_walls = config.getboolean("light_walls")
         self.algorithm = config.getint("algorithm")
         self.debug = config.getboolean("debug")
+
+
+class ColorConfig:
+    def __init__(self):
+        self.message_critical = libtcod.dark_red
