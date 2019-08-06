@@ -16,3 +16,6 @@ Inventory:   i
 Wait:        .
 Quit/Cancel: Escape
 ```
+
+## Screenshots
+![First room v0.0.1](./marketing/ghost-town-v0.0.1-screenshot.jpg)
