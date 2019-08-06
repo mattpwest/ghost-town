@@ -4,7 +4,7 @@ import esper
 import tcod.event
 import tcod.event_constants as keys
 
-from components import Player, Actor
+from components import Player, Actor, Inventory
 from components.action import *
 
 
@@ -16,10 +16,10 @@ class MapInputSystem(esper.Processor):
     def process(self):
         for entity, (actor, player) in self.world.get_components(Actor, Player):
             if actor.energy >= actor.cost:
-                action = self.handle_input()
+                action = self.handle_input(entity)
                 self.world.add_component(entity, action)
 
-    def handle_input(self):
+    def handle_input(self, entity_player):
         result = None
 
         while result is None:
@@ -27,11 +27,11 @@ class MapInputSystem(esper.Processor):
                 if event.type == 'QUIT':
                     result = QuitAction()
                 elif event.type == 'KEYDOWN':
-                    result = self.handle_keys(event)
+                    result = self.handle_keys(event, entity_player)
 
         return result
 
-    def handle_keys(self, event):
+    def handle_keys(self, event, entity_player):
         if event.sym == keys.K_UP:
             return move(0, -1)
         elif event.sym == keys.K_DOWN:
@@ -45,7 +45,10 @@ class MapInputSystem(esper.Processor):
         elif event.sym == keys.K_l:
             return LookAction()
         elif event.sym == keys.K_i:
-            return OpenInventoryAction()
+            if self.world.has_component(entity_player, Inventory):
+                return OpenInventoryAction()
+            else:
+                return {}
         elif event.sym == keys.K_PERIOD:
             return NoAction()
         elif event.sym == keys.K_RETURN and event.mod & tcod.event.KMOD_ALT:

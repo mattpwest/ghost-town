@@ -91,3 +91,6 @@ class DamageSystem(esper.Processor):
                 component.x = position.x
                 component.y = position.y
                 self.map.entities[position.x][position.y] = player
+
+        possessor.my_components.clear()
+        possessor.target_components.clear()
