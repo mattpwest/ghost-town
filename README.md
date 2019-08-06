@@ -8,9 +8,11 @@ Currently you lose the game by running out of essence and there's no way to win 
 
 ## Controls
 
+```
 Movement:    Up, Down, Left, Right
 Look:        l
 Pick up:     ,
 Inventory:   i
 Wait:        .
 Quit/Cancel: Escape
+```
