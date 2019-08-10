@@ -70,7 +70,9 @@ class GameMap:
             if len(self.rooms) != 0:
                 self.connect_rooms(new_room, self.rooms[len(self.rooms) - 1])
 
-            self.place_entities(new_room, self.config.room_max_monsters)
+            if room_number != 0:
+                self.place_entities(new_room, self.config.room_max_monsters)
+
             self.place_items(new_room, self.config.room_max_items)
 
             self.rooms.append(new_room)
