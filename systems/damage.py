@@ -3,7 +3,7 @@ import logging
 import esper
 import tcod as libtcod
 
-from components import Damage, Text, Health, Position, Essence, Possessor, EssenceAbsorber
+from components import Damage, Text, Health, Position, Essence, Possessor, EssenceAbsorber, Inventory
 
 
 class DamageSystem(esper.Processor):
@@ -37,6 +37,8 @@ class DamageSystem(esper.Processor):
 
                 self.spawn_corpse(entity)
 
+                self.drop_inventory(entity)
+
                 self.delete_entity(entity)
 
     def spawn_corpse(self, entity):
@@ -44,6 +46,14 @@ class DamageSystem(esper.Processor):
         text = self.world.component_for_entity(entity, Text)
         corpse = self.entity_factory.corpse(position.x, position.y, text.noun)
         self.map.items[position.x][position.y].append(corpse)
+
+    def drop_inventory(self, entity):
+        position = self.world.component_for_entity(entity, Position)
+        inventory = self.world.component_for_entity(entity, Inventory)
+        for item in inventory.items:
+            self.map.add_item(item, position.x, position.y)
+
+        inventory.items.clear()
 
     def remove_from_map(self, entity):
         position = self.world.component_for_entity(entity, Position)

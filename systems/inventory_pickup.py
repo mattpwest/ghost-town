@@ -20,8 +20,7 @@ class InventoryPickupSystem(esper.Processor):
         for entity, (actor, position, inventory, action) \
                 in self.world.get_components(Actor, Position, Inventory, PickupAction):
 
-            items = self.map.items[position.x][position.y]
-            if len(items) == 0:
+            if not self.map.has_item(position.x, position.y):
                 self.messages.add("There is nothing to pick up here...")
                 self.world.remove_component(entity, PickupAction)
                 return
@@ -31,9 +30,8 @@ class InventoryPickupSystem(esper.Processor):
                 self.world.remove_component(entity, PickupAction)
                 return
 
-            item_entity = items.pop()
+            item_entity = self.map.take_item(position.x, position.y)
             inventory.items.append(item_entity)
-            self.world.remove_component(item_entity, Item)  # Stop rendering on map
             item_text = self.world.component_for_entity(item_entity, Text)
             self.messages.add("You pick up the " + item_text.noun + " and add it to your pack.")
             self.log.info("Inventory: " + str(inventory.items))

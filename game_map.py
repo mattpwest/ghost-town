@@ -3,7 +3,7 @@ import random
 from random import Random
 import sys
 
-from components import Tangible
+from components import Tangible, Item, Position
 
 
 class GameMap:
@@ -23,6 +23,27 @@ class GameMap:
 
         self.seed = random.randint(0, sys.maxsize)
         self.rng = Random(self.seed)
+
+    def add_item(self, item, x, y):
+        self.items[x][y].append(item)
+
+        if not self.world.has_component(item, type(Item)):
+            self.world.add_component(item, Item())  # Triggers item rendering on map
+
+        position = self.world.component_for_entity(item, Position)
+        position.x = x
+        position.y = y
+
+    def take_item(self, x, y):
+        if len(self.items[x][y]) == 0:
+            return None
+
+        item_entity = self.items[x][y].pop()
+        self.world.remove_component(item_entity, Item)  # Stop rendering on map
+        return item_entity
+
+    def has_item(self, x, y):
+        return len(self.items[x][y]) > 0
 
     def clear(self):
         self.world.clear_database()
