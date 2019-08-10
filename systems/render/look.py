@@ -32,8 +32,8 @@ class RenderLookSystem(esper.Processor):
         if target is None:
             return
 
-        x = self.config.ui.bar_width + 3
-        y = 0
+        x = self.config.ui.bar_width + 1
+        y = 1
         w = self.config.ui.width - x
         h = self.config.ui.height
         self.consoles_ui.console.draw_rect(
@@ -50,28 +50,26 @@ class RenderLookSystem(esper.Processor):
         creature = self.map.entities[target.x][target.y]
         self.log.debug("Look creature: " + str(creature))
         if creature is not None:
-            self.draw_creature(creature)
+            self.draw_creature(creature, x + 1, y)
             return
 
         items = self.map.items[target.x][target.y]
         self.log.debug("Look items: " + str(creature))
         if items is not None and len(items) > 0:
-            self.draw_items(items)
+            self.draw_items(items, x + 1, y)
             return
 
         tile = self.map.tiles[target.x][target.y]
         self.log.debug("Look tile: " + str(tile))
         if tile is not None:
-            self.draw_tile(tile)
+            self.draw_tile(tile, x + 1, y)
 
         if target_text:
             libtcod.console_set_default_foreground(self.consoles_ui.console, libtcod.orange)
-            self.draw_text(target_text, self.config.ui.bar_width + 3, 1)
+            self.draw_text(target_text, x + 1, y)
             libtcod.console_set_default_foreground(self.consoles_ui.console, libtcod.white)
 
-    def draw_creature(self, creature):
-        x = self.config.ui.bar_width + 3
-        y = 1
+    def draw_creature(self, creature, x, y):
         for text in self.world.try_component(creature, Text):
             self.draw_text(text.description, x, y)
 
@@ -88,10 +86,7 @@ class RenderLookSystem(esper.Processor):
                 libtcod.light_red, libtcod.darker_red
             )
 
-    def draw_items(self, items):
-        x = self.config.ui.bar_width + 3
-        y = 1
-
+    def draw_items(self, items, x, y):
         message = "There "
         if len(items) == 1:
             message += "is an item here:"
@@ -107,9 +102,7 @@ class RenderLookSystem(esper.Processor):
                 self.draw_text(" - " + text.description, x, y)
                 y += 1
 
-    def draw_tile(self, tile):
-        x = self.config.ui.bar_width + 3
-        y = 1
+    def draw_tile(self, tile, x, y):
         for text in self.world.try_component(tile, Text):
             self.draw_text(text.description, x, y)
 
