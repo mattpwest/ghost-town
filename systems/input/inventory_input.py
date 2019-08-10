@@ -24,10 +24,16 @@ class InventoryInputSystem(esper.Processor):
     def process(self):
         action = handle_input()
 
-        if action["quit"]:
+        if action is not None and action["quit"]:
             self.game.new_state = State.MAP
 
+        no_inventory = True
         for player, (unused, inventory) in self.world.get_components(Player, Inventory):
+            no_inventory = False
+
+            if action is None:
+                continue
+
             if action["mode"] is not None:
                 self.mode = action["mode"]
 
@@ -75,14 +81,17 @@ class InventoryInputSystem(esper.Processor):
             elif self.mode == Mode.ACTIONS and inventory.selected_action + selection_delta >= 0:
                 inventory.selected_action += selection_delta
 
+        # Bit of a hack: oops character died while showing the inventory, go back to map state
+        if no_inventory:
+            self.game.new_state = State.MAP
+
 
 def handle_input():
     result = None
 
-    while result is None:
-        for event in tcod.event.wait():
-            if event.type == 'KEYDOWN':
-                result = handle_keys(event)
+    for event in tcod.event.get():
+        if event.type == 'KEYDOWN':
+            result = handle_keys(event)
 
     return result
 
@@ -101,7 +110,7 @@ def handle_keys(event):
     elif event.sym == keys.K_ESCAPE:
         return {"select": 0, "mode": None, "quit": True, "activate": False}
 
-    return {"select": 0, "mode": None, "quit": False, "activate": False}
+    return None
 
 
 def select(change):
