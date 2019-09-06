@@ -22,7 +22,7 @@ class InventoryInputSystem(esper.Processor):
         self.entity_factory = entity_factory
 
     def process(self):
-        action = handle_input()
+        action = get_input_non_blocking()
 
         if action is not None and action["quit"]:
             self.game.new_state = State.MAP
@@ -86,7 +86,7 @@ class InventoryInputSystem(esper.Processor):
             self.game.new_state = State.MAP
 
 
-def handle_input():
+def get_input_non_blocking():
     result = None
 
     for event in tcod.event.get():

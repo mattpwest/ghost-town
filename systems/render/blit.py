@@ -22,7 +22,7 @@ class RenderBlitSystem(esper.Processor):
             'Ghost Town',
             fullscreen,
             self.config.display.renderer,
-            vsync=True
+            vsync=False
         )
         self.log.debug("Initialized TCOD graphics!")
 

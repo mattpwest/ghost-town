@@ -17,17 +17,18 @@ class MapInputSystem(esper.Processor):
         for entity, (actor, player) in self.world.get_components(Actor, Player):
             if actor.energy >= actor.cost:
                 action = self.handle_input(entity)
-                self.world.add_component(entity, action)
+
+                if action is not None:
+                    self.world.add_component(entity, action)
 
     def handle_input(self, entity_player):
         result = None
 
-        while result is None:
-            for event in tcod.event.wait():
-                if event.type == 'QUIT':
-                    result = QuitAction()
-                elif event.type == 'KEYDOWN':
-                    result = self.handle_keys(event, entity_player)
+        for event in tcod.event.get():
+            if event.type == 'QUIT':
+                result = QuitAction()
+            elif event.type == 'KEYDOWN':
+                result = self.handle_keys(event, entity_player)
 
         return result
 
